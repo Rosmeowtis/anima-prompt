@@ -70,7 +70,7 @@ def check(prompt: str) -> dict:
 
     for a_set, b_set in CONTRADICTIONS:
         if (a_set & tag_set) and (b_set & tag_set):
-            errors.append(f"{a_set} 与 {b_set} 互斥")
+            errors.append(f"{', '.join(a_set)} 与 {', '.join(b_set)} 互斥")
 
     if "solo" in tag_set and total_boys > 0:
         errors.append("solo 与男性角色矛盾")

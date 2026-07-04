@@ -39,7 +39,7 @@ def check(prompt: str) -> dict:
         if (group_a & tag_set) and (group_b & tag_set):
             found_a = group_a & tag_set
             found_b = group_b & tag_set
-            issues.append(f"{found_a} + {found_b} ({reason})")
+            issues.append(f"{', '.join(found_a)} + {', '.join(found_b)} ({reason})")
 
     passed = len(issues) == 0
     detail = "; ".join(issues) if issues else "场景合理"

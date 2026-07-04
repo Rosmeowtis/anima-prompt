@@ -121,7 +121,7 @@ def cmd_search(args: argparse.Namespace) -> None:
     for row in rows:
         print(f"#{row['id']} [{row['scene_type'] or '?'}] {row['description'][:80]}")
         print(f"    {row['prompt'][:120]}{'...' if len(row['prompt']) > 120 else ''}")
-        if row.get("tags"):
+        if row["tags"]:
             print(f"    tags: {row['tags'][:100]}")
         print()
 

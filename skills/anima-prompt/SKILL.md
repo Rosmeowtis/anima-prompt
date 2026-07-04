@@ -110,7 +110,10 @@ python scripts/query_tags.py rm-cat <slot> <path>          # 删除空分类
 
 # 输出格式
 # 默认：人类可读缩进文本
-# --json：JSON 格式
+# 需要 JSON 时，--json 必须放在子命令之前：
+#   python scripts/query_tags.py --json list
+#   python scripts/query_tags.py --json get <slot> <path>
+#   python scripts/query_tags.py --json search <keyword>
 ```
 
 ### check_prompt.py —— 校验
