@@ -1,0 +1,11 @@
+[project]
+name = "anima-prompt"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.0",
+]
+
+[tool.uv]
+# 此目录不是 Python 包，仅用于声明脚本依赖 (pyyaml, rapidfuzz)
