@@ -36,7 +36,15 @@ def normalize(s: str) -> str:
 
 def open_reader():
     if not CSV_PATH.exists():
-        print(f"错误：未找到 {CSV_PATH}", file=sys.stderr)
+        download_name = "danbooru_character_webui.csv"
+        print(
+            f"缺失数据文件: {CSV_PATH}\n"
+            f"请下载\n"
+            f"  https://huggingface.co/datasets/Laxhar/noob-wiki/resolve/main/{download_name}\n"
+            f"并保存为\n"
+            f"  {CSV_PATH}",
+            file=sys.stderr,
+        )
         sys.exit(1)
     text = CSV_PATH.open("r", encoding="utf-8")
     return csv.DictReader(text)
