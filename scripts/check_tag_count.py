@@ -10,9 +10,6 @@ import argparse
 import json
 import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
-
 RANGES = {
     "simple":   (16, 30, "单人展示/诱惑/暴露/自慰"),
     "standard": (22, 38, "双人性交/前戏"),
@@ -60,4 +57,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

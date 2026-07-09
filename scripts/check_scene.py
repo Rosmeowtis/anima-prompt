@@ -10,9 +10,6 @@ import argparse
 import json
 import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
-
 INCOMPATIBLE = [
     ({"underwater"}, {"cigarette"}, "水下不能抽烟"),
     ({"underwater"}, {"candle"}, "水下不能点蜡烛"),
@@ -62,4 +59,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

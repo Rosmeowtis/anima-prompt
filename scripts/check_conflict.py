@@ -10,9 +10,6 @@ import argparse
 import json
 import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
-
 CONFLICT_PAIRS = [
     ("from front", "from behind", "视角矛盾"),
     ("from above", "from below", "视角矛盾"),
@@ -84,4 +81,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

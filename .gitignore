@@ -1,0 +1,29 @@
+# Node (opencode 插件系统)
+node_modules
+package.json
+package-lock.json
+bun.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+.python-version
+
+# 脚本自动生成
+*.bak
+
+# SQLite 仓库数据库
+warehouse/prompts.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.serena
+.idea/
+.vscode/
+*.swp
+*.swo

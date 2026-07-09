@@ -10,9 +10,6 @@ import argparse
 import json
 import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
-
 BANNED_PATTERNS = [
     "sunlight",
     "moonlight",
@@ -88,4 +85,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

@@ -11,9 +11,6 @@ import json
 import sys
 from collections import Counter
 
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
-
 
 def check(prompt: str) -> dict:
     tags = [t.strip() for t in prompt.split(",") if t.strip()]
@@ -40,4 +37,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

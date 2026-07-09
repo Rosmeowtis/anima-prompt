@@ -12,44 +12,26 @@
 
 import argparse
 import json
-import subprocess
 import sys
-from pathlib import Path
+
+from check_count import check as check_count
+from check_conflict import check as check_conflict
+from check_duplicates import check as check_duplicates
+from check_scene import check as check_scene
+from check_lighting import check as check_lighting
+from check_tag_count import check as check_tag_count
 
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
-SCRIPTS_DIR = Path(__file__).resolve().parent
-
 CHECKS = [
-    ("count",     "check_count.py"),
-    ("conflict",  "check_conflict.py"),
-    ("duplicates","check_duplicates.py"),
-    ("scene",     "check_scene.py"),
-    ("lighting",  "check_lighting.py"),
-    ("tag_count", "check_tag_count.py"),
+    ("count",      check_count),
+    ("conflict",   check_conflict),
+    ("duplicates", check_duplicates),
+    ("scene",      check_scene),
+    ("lighting",   check_lighting),
+    ("tag_count",  check_tag_count),
 ]
-
-
-def run_check(script: str, prompt: str, scene: str = "") -> dict:
-    path = SCRIPTS_DIR / script
-    cmd = [sys.executable, str(path), "--json", prompt]
-    if scene and script == "check_tag_count.py":
-        cmd.extend(["--scene", scene])
-    try:
-        result = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", timeout=30)
-        stdout = result.stdout.strip()
-        if stdout:
-            try:
-                parsed = json.loads(stdout)
-                return parsed
-            except json.JSONDecodeError:
-                pass
-        return {"passed": False, "detail": result.stderr.strip() or stdout or f"{script} 无输出"}
-    except subprocess.TimeoutExpired:
-        return {"passed": False, "detail": f"{script} 执行超时"}
-    except json.JSONDecodeError:
-        return {"passed": False, "detail": f"{script}: {result.stdout[:200]}"}
 
 
 def main() -> None:
@@ -70,8 +52,14 @@ def main() -> None:
 
     tag_count = len([t.strip() for t in prompt.split(",") if t.strip()])
     report = {"passed": True, "prompt": prompt, "tag_count": tag_count, "checks": {}}
-    for check_name, script in CHECKS:
-        result = run_check(script, prompt, args.scene)
+    for check_name, check_fn in CHECKS:
+        try:
+            if check_name == "tag_count":
+                result = check_fn(prompt, args.scene)
+            else:
+                result = check_fn(prompt)
+        except Exception as e:
+            result = {"passed": False, "detail": f"执行异常: {e}"}
         report["checks"][check_name] = result
         if not result.get("passed", False):
             report["passed"] = False

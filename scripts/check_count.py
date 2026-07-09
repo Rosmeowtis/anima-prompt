@@ -11,9 +11,6 @@ import json
 import re
 import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
-
 GENDER_COUNT_MAP = {
     "1girl":   (1, "f"),
     "2girls":  (2, "f"),
@@ -99,4 +96,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()
