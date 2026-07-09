@@ -103,7 +103,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 匹配场景类型 | 读 `references/decision-tree.md` |
 | 查槽位顺序/标签范围 | 读 `references/slot-order.md` |
 | 检查互斥冲突 | 读 `references/conflict-table.md` |
-| 特殊主题配方 | 读 `references/special-themes/<theme>.md` |
+| 特殊主题配方 | 读 `references/special-themes/index.md` |
 
 注意事项：
 - `--json` 放在子命令之前：`query_tags.py --json list`
