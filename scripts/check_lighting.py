@@ -9,6 +9,9 @@
 import argparse
 import json
 import sys
+from dataclasses import asdict
+
+from _types import CheckResult
 
 BANNED_PATTERNS = [
     "sunlight",
@@ -55,7 +58,7 @@ ALLOWED_CARRYOVER = [
 ]
 
 
-def check(prompt: str) -> dict:
+def check(prompt: str) -> CheckResult:
     tags = [t.strip() for t in prompt.split(",") if t.strip()]
     violations = []
     for tag in tags:
@@ -66,7 +69,7 @@ def check(prompt: str) -> dict:
 
     passed = len(violations) == 0
     detail = f"违禁标签: {', '.join(violations)}" if violations else "无违禁标签"
-    return {"passed": passed, "detail": detail}
+    return CheckResult(passed=passed, detail=detail)
 
 
 def main() -> None:
@@ -77,11 +80,11 @@ def main() -> None:
 
     result = check(args.prompt)
     if args.json:
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(json.dumps(asdict(result), ensure_ascii=False, indent=2))
     else:
-        status = "✓" if result["passed"] else "✗"
-        print(f"{status} 灯光禁令: {result['detail']}")
-    sys.exit(0 if result["passed"] else 1)
+        status = "✓" if result.passed else "✗"
+        print(f"{status} 灯光禁令: {result.detail}")
+    sys.exit(0 if result.passed else 1)
 
 
 if __name__ == "__main__":

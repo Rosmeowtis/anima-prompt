@@ -19,13 +19,9 @@
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 from typing import Any
-
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
 
 import yaml
 
@@ -49,12 +45,12 @@ SLOT_FILES = {
 }
 
 
-def _load(slot: str) -> dict:
+def _load(slot: str) -> dict[str, Any]:
     fname = SLOT_FILES.get(slot)
     if fname is None:
         print(f"错误: 未知槽位 '{slot}'，可用: {', '.join(SLOT_FILES)}", file=sys.stderr)
         sys.exit(1)
-    path = TAG_LIBRARY_DIR / fname
+    path = TAG_LIBRARY_DIR / fname  # ty:ignore[unsupported-operator] 确信 fname: str
     if not path.exists():
         print(f"错误: 文件不存在 {path}", file=sys.stderr)
         sys.exit(1)
@@ -62,7 +58,7 @@ def _load(slot: str) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def _save(slot: str, data: dict) -> None:
+def _save(slot: str, data: dict[str, Any]) -> None:
     fname = SLOT_FILES[slot]
     path = TAG_LIBRARY_DIR / fname
     bak = path.with_suffix(".yaml.bak")
@@ -72,7 +68,7 @@ def _save(slot: str, data: dict) -> None:
         yaml.safe_dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
 
 
-def _resolve(data: dict, path_str: str) -> Any:
+def _resolve(data: dict[str, Any], path_str: str) -> Any:
     """按 / 分割路径递归访问嵌套字典。"""
     if not path_str:
         return data
@@ -87,7 +83,7 @@ def _resolve(data: dict, path_str: str) -> Any:
     return current
 
 
-def _set_value(data: dict, path_str: str, value: Any) -> dict:
+def _set_value(data: dict[str, Any], path_str: str, value: Any) -> dict[str, Any]:
     parts = [p.strip() for p in path_str.split("/") if p.strip()]
     if not parts:
         return data
@@ -100,7 +96,7 @@ def _set_value(data: dict, path_str: str, value: Any) -> dict:
     return data
 
 
-def _delete_key(data: dict, path_str: str) -> dict:
+def _delete_key(data: dict[str, Any], path_str: str) -> dict[str, Any]:
     parts = [p.strip() for p in path_str.split("/") if p.strip()]
     if not parts:
         return data
@@ -114,7 +110,7 @@ def _delete_key(data: dict, path_str: str) -> dict:
     return data
 
 
-def _tree(data: dict, prefix: str = "", is_json: bool = False, max_depth: int = 3, current_depth: int = 0) -> str | list:
+def _tree(data: dict[str, Any], prefix: str = "", is_json: bool = False, max_depth: int = 3, current_depth: int = 0) -> str | list[dict]:
     if current_depth >= max_depth:
         return "" if not is_json else []
     lines: list[str] = []
@@ -143,7 +139,7 @@ def _tree(data: dict, prefix: str = "", is_json: bool = False, max_depth: int = 
     return "\n".join(lines)
 
 
-def _flatten_tags(data: dict, slot: str, prefix: str = "") -> list[tuple[str, str, str]]:
+def _flatten_tags(data: dict[str, Any], slot: str, prefix: str = "") -> list[tuple[str, str, str]]:
     """返回 [(slot, path, tag), ...]"""
     result: list[tuple[str, str, str]] = []
     for key, value in data.items():
@@ -315,8 +311,8 @@ def cmd_rename(args: argparse.Namespace) -> None:
 
 
 def cmd_mv(args: argparse.Namespace) -> None:
-    cmd_rm(args)
-    cmd_add(args)
+    cmd_rm(argparse.Namespace(slot=args.slot, path=args.old_path, tag=args.tag))
+    cmd_add(argparse.Namespace(slot=args.slot, path=args.new_path, tag=args.tag))
 
 
 def cmd_add_cat(args: argparse.Namespace) -> None:
@@ -435,4 +431,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

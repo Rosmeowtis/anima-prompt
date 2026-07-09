@@ -9,6 +9,9 @@
 import argparse
 import json
 import sys
+from dataclasses import asdict
+
+from _types import CheckResult
 
 RANGES = {
     "simple":   (16, 30, "单人展示/诱惑/暴露/自慰"),
@@ -17,7 +20,7 @@ RANGES = {
 }
 
 
-def check(prompt: str, scene: str = "") -> dict:
+def check(prompt: str, scene: str = "") -> CheckResult:
     tags = [t.strip() for t in prompt.split(",") if t.strip()]
     count = len(tags)
 
@@ -36,7 +39,7 @@ def check(prompt: str, scene: str = "") -> dict:
             detail += " (偏多)"
             passed = False
 
-    return {"passed": passed, "detail": detail, "count": count}
+    return CheckResult(passed=passed, detail=detail, count=count)
 
 
 def main() -> None:
@@ -49,11 +52,11 @@ def main() -> None:
 
     result = check(args.prompt, args.scene)
     if args.json:
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(json.dumps(asdict(result), ensure_ascii=False, indent=2))
     else:
-        status = "✓" if result["passed"] else "✗"
-        print(f"{status} 标签数量: {result['detail']}")
-    sys.exit(0 if result["passed"] else 1)
+        status = "✓" if result.passed else "✗"
+        print(f"{status} 标签数量: {result.detail}")
+    sys.exit(0 if result.passed else 1)
 
 
 if __name__ == "__main__":

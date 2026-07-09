@@ -10,6 +10,9 @@ import argparse
 import json
 import re
 import sys
+from dataclasses import asdict
+
+from _types import CheckResult
 
 GENDER_COUNT_MAP = {
     "1girl":   (1, "f"),
@@ -31,7 +34,7 @@ CONTRADICTIONS = [
 ]
 
 
-def check(prompt: str) -> dict:
+def check(prompt: str) -> CheckResult:
     tags = [t.strip() for t in prompt.split(",") if t.strip()]
     tag_set = set(tags)
     errors = []
@@ -73,11 +76,11 @@ def check(prompt: str) -> dict:
         errors.append("solo 与男性角色矛盾")
 
     if total_girls == 0 and total_boys == 0 and not errors:
-        return {"passed": True, "detail": "无显式人数标签，跳过检查"}
+        return CheckResult(passed=True, detail="无显式人数标签，跳过检查")
 
     passed = len(errors) == 0
     detail = ", ".join(errors) if errors else f"角色数: 女={total_girls}, 男={total_boys}"
-    return {"passed": passed, "detail": detail}
+    return CheckResult(passed=passed, detail=detail)
 
 
 def main() -> None:
@@ -88,11 +91,11 @@ def main() -> None:
 
     result = check(args.prompt)
     if args.json:
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(json.dumps(asdict(result), ensure_ascii=False, indent=2))
     else:
-        status = "✓" if result["passed"] else "✗"
-        print(f"{status} 人数一致性: {result['detail']}")
-    sys.exit(0 if result["passed"] else 1)
+        status = "✓" if result.passed else "✗"
+        print(f"{status} 人数一致性: {result.detail}")
+    sys.exit(0 if result.passed else 1)
 
 
 if __name__ == "__main__":

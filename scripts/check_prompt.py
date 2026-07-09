@@ -13,7 +13,9 @@
 import argparse
 import json
 import sys
+from dataclasses import asdict
 
+from _types import CheckResult, Report
 from check_count import check as check_count
 from check_conflict import check as check_conflict
 from check_duplicates import check as check_duplicates
@@ -51,7 +53,7 @@ def main() -> None:
         sys.exit(1)
 
     tag_count = len([t.strip() for t in prompt.split(",") if t.strip()])
-    report = {"passed": True, "prompt": prompt, "tag_count": tag_count, "checks": {}}
+    report = Report(passed=True, prompt=prompt, tag_count=tag_count, checks={})
     for check_name, check_fn in CHECKS:
         try:
             if check_name == "tag_count":
@@ -59,13 +61,13 @@ def main() -> None:
             else:
                 result = check_fn(prompt)
         except Exception as e:
-            result = {"passed": False, "detail": f"执行异常: {e}"}
-        report["checks"][check_name] = result
-        if not result.get("passed", False):
-            report["passed"] = False
+            result = CheckResult(passed=False, detail=f"执行异常: {e}")
+        report.checks[check_name] = result
+        if not result.passed:
+            report.passed = False
 
-    print(json.dumps(report, ensure_ascii=False, indent=2))
-    sys.exit(0 if report["passed"] else 1)
+    print(json.dumps(asdict(report), ensure_ascii=False, indent=2))
+    sys.exit(0 if report.passed else 1)
 
 
 if __name__ == "__main__":

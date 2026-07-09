@@ -15,11 +15,9 @@ import json
 import sqlite3
 import sys
 import textwrap
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-
-sys.stdout.reconfigure(encoding="utf-8")
-sys.stderr.reconfigure(encoding="utf-8")
 
 DB_PATH = Path(__file__).resolve().parent.parent / "warehouse" / "prompts.db"
 
@@ -63,7 +61,7 @@ def get_db() -> sqlite3.Connection:
     return conn
 
 
-def cmd_init(args: argparse.Namespace) -> None:
+def cmd_init(args: argparse.Namespace):
     conn = get_db()
     conn.close()
     print(f"仓库已初始化: {DB_PATH}")
@@ -88,7 +86,7 @@ def cmd_add(args: argparse.Namespace) -> None:
 def cmd_search(args: argparse.Namespace) -> None:
     conn = get_db()
     conditions = []
-    params: list = []
+    params: list[str] = []
 
     if args.tag:
         conditions.append("tags LIKE ?")
@@ -148,7 +146,6 @@ def cmd_stats(args: argparse.Namespace) -> None:
         all_tags: list[str] = []
         for row in conn.execute("SELECT tags FROM prompts WHERE tags IS NOT NULL").fetchall():
             all_tags.extend(t.strip() for t in row["tags"].split(",") if t.strip())
-        from collections import Counter
         for tag, cnt in Counter(all_tags).most_common(15):
             print(f"  {tag}: {cnt}")
 
@@ -238,4 +235,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main()

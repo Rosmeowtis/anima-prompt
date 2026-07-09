@@ -9,6 +9,9 @@
 import argparse
 import json
 import sys
+from dataclasses import asdict
+
+from _types import CheckResult
 
 INCOMPATIBLE = [
     ({"underwater"}, {"cigarette"}, "水下不能抽烟"),
@@ -28,7 +31,7 @@ INCOMPATIBLE = [
 ]
 
 
-def check(prompt: str) -> dict:
+def check(prompt: str) -> CheckResult:
     tags = [t.strip() for t in prompt.split(",") if t.strip()]
     tag_set = set(tags)
     issues = []
@@ -40,7 +43,7 @@ def check(prompt: str) -> dict:
 
     passed = len(issues) == 0
     detail = "; ".join(issues) if issues else "场景合理"
-    return {"passed": passed, "detail": detail}
+    return CheckResult(passed=passed, detail=detail)
 
 
 def main() -> None:
@@ -51,11 +54,11 @@ def main() -> None:
 
     result = check(args.prompt)
     if args.json:
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+        print(json.dumps(asdict(result), ensure_ascii=False, indent=2))
     else:
-        status = "✓" if result["passed"] else "✗"
-        print(f"{status} 场景合理性: {result['detail']}")
-    sys.exit(0 if result["passed"] else 1)
+        status = "✓" if result.passed else "✗"
+        print(f"{status} 场景合理性: {result.detail}")
+    sys.exit(0 if result.passed else 1)
 
 
 if __name__ == "__main__":
