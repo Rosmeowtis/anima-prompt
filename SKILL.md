@@ -140,3 +140,14 @@ uv run scripts/warehouse.py stats                 # 统计
 ```
 
 数据库位于 `warehouse/prompts.db`，支持 SQLite FTS5 全文搜索。
+
+## SUBAGENTS（可选安装）
+
+将 `agents/` 下的模板复制到 `.opencode/agents/` 即可注册为 OpenCode subagent：
+
+```bash
+cp agents/anima-engineer.md .opencode/agents/
+cp agents/anima-checker.md .opencode/agents/
+```
+
+之后可在 OpenCode 中通过 `@anima-engineer` 调用端到端生成、通过 `@anima-checker` 调用仅校验。
