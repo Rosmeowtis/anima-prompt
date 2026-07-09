@@ -42,10 +42,10 @@ uv venv && uv pip install pyyaml rapidfuzz
    → 确认槽位顺序、标签数量范围、风格一致性约束
 
 3. 翻库填标签（逐槽位）
-   → python uv run scripts/query_tags.py tree <slot>          # 看分类结构
-   → python uv run scripts/query_tags.py get <slot> <path>    # 拿标签列表
-   → python uv run scripts/query_tags.py search <keyword>     # 按关键词找
-   → 按槽位顺序 [count→appearance→clothing→pose→expression→camera→scene→detail] 逐个填
+   → uv run scripts/query_tags.py tree <slot>          # 看分类结构
+   → uv run scripts/query_tags.py get <slot> <path>    # 拿标签列表
+   → uv run scripts/query_tags.py search <keyword>     # 按关键词找
+   → 按 references/slot-order.md 定义的完整槽位顺序逐个填
 
 4. 特殊主题交叉
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
@@ -71,7 +71,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 分隔 | 标签间用 `, `（逗号+空格） |
 | 大小写 | 全部 lowercase |
 | 权重 | 禁止写权重，字段顺序即隐式权重 |
-| 禁止输出 | 质量词 (masterpiece/best quality/score_X)、画师名 (@artist)、光线/光影/色调标签（见 §13.6 完整清单）。允许环境天气描写 (rain/snow/fog/steam) |
+| 禁止输出 | 质量词 (masterpiece/best quality/score_X)、画师名 (@artist)、光线/光影/色调标签（lora 已内置）。允许环境天气描写 (rain/snow/fog/steam) |
 | 输出形式 | 纯文本一行，无 code fence、无 markdown、无引导语 |
 | 自然语言补充 | 标签无法准确描述时，用英文自然语言短句放在末尾 |
 
@@ -92,38 +92,26 @@ uv venv && uv pip install pyyaml rapidfuzz
 
 ## TOOLS & REFERENCES
 
-### 脚本
-
-| 命令 | 用途 |
-|------|------|
-| `scripts/query_tags.py list` | 列出所有 8 个槽位 |
-| `scripts/query_tags.py tree <slot>` | 查看槽位的分类树结构 |
-| `scripts/query_tags.py get <slot> <path>` | 读取某分支下的具体标签 |
-| `scripts/query_tags.py search <kw> [--fuzzy] [--slot S]` | 精确搜索 / rapidfuzz 模糊搜索 |
-| `scripts/query_tags.py add/rm/rename/mv` | 标签增删改移 |
-| `scripts/check_prompt.py "<prompt>" [--scene X]` | 一键 6 项校验，JSON 报告 |
-| `scripts/warehouse.py add/search/stats/export/rm` | prompt 仓库管理 (SQLite+FTS5) |
+| 需要... | 使用 |
+|---------|------|
+| 查看槽位分类树 | `uv run scripts/query_tags.py tree <slot>` |
+| 读取标签列表 | `uv run scripts/query_tags.py get <slot> <path>` |
+| 搜索标签 | `uv run scripts/query_tags.py search <keyword>` |
+| 标签增删改移 | `uv run scripts/query_tags.py add/rm/rename/mv` |
+| 一键校验 (6项) | `uv run scripts/check_prompt.py "<prompt>" --scene <simple\|standard\|complex>` |
+| 仓库管理 | `uv run scripts/warehouse.py add/search/stats` |
+| 匹配场景类型 | 读 `references/decision-tree.md` |
+| 查槽位顺序/标签范围 | 读 `references/slot-order.md` |
+| 检查互斥冲突 | 读 `references/conflict-table.md` |
+| 特殊主题配方 | 读 `references/special-themes/<theme>.md` |
+| 标签库教程（人类查看） | 读 `references/original-tutorial.md` |
 
 注意事项：
-- `--json` 输出必须放在子命令之前：`query_tags.py --json list` ✅
-- 所有脚本通过 `uv run` 运行
-- `query_tags.py` 的写入命令 (add/rm/rename/mv) 会自动生成 .bak 备份
+- `--json` 放在子命令之前：`query_tags.py --json list`
+- 写入命令自动生成 `.bak` 备份
+- 查询标签库使用脚本，**不要直接读 YAML**
 
-### 参考文件
-
-当需要时打开对应文件：
-
-| 我需要... | 打开 |
-|-----------|------|
-| 匹配场景类型、确定槽位侧重 | `references/decision-tree.md` |
-| 查槽位顺序、标签数量范围、风格规则 | `references/slot-order.md` |
-| 检查两个标签是否互斥 | `references/conflict-table.md` |
-| NTR / BDSM / RBQ / 男娘Futa / 异种 / 调教 / 胁迫 / 偷窥 / 事后 / 另类日常 / 大车小孩 / 隐奸 | `references/special-themes/<theme>.md` |
-| 标签库完整数据（仅供人类查看） | `references/original-tutorial.md` |
-
-标签库通过 `query_tags.py` 查询，**不要直接读 YAML 文件**。
-
-### 标签库概览
+### 标签库文件
 
 | 槽位 | 文件 | 典型内容 |
 |------|------|----------|
@@ -136,62 +124,9 @@ uv venv && uv pip install pyyaml rapidfuzz
 | scene | scene-environment.yaml | 场所速查(私密/半公开/公共)、风险矩阵、天气时辰、场景细节 |
 | detail/mood | detail-mood.yaml | 画面质感、运动渲染、光学效果、数字效果、氛围基调、禁令清单 |
 
-## SLOT ORDER
-
-**严格按此顺序填充**（靠前权重更高）：
-
-```
-[count/gender] → [character/series] → [appearance] → [clothing/state] →
-[pose/action/sex] → [expression/reaction] → [camera/shot] →
-[scene/environment] → [detail/mood] →
-[natural language]
-```
-
-**铁律**：
-- 风格一致性：古风配古风，赛博配赛博，日常配日常（如 `hanfu` + `ancient shrine` ✅，`hanfu` + `cyberpunk city` ❌）
-- 标签数量：单人 16-30 / 双人 22-38 / 复杂 30-48
-- 单人场景默认注入 `looking at viewer`（除非用户指定背影/侧脸）
-- 多人场景：每个角色写 `角色名 with 关键外观`，动作关系用自然语言放末尾
-
 ## FULL EXAMPLE
 
-用户说：*"帮我生成一个金发双马尾女仆在教室里的 Anima prompt"*
-
-LLM 执行：
-
-```bash
-# 1. 读决策树 → 单人展示类 → 槽位侧重在看
-# 2. 翻库
-uv run scripts/query_tags.py get count-identity "人数与性别/一女"
-# → 1girl, solo
-
-uv run scripts/query_tags.py get appearance "头发/颜色"
-# → 选: blonde hair
-
-uv run scripts/query_tags.py get appearance "头发/扎发编发"
-# → 选: twin tails
-
-uv run scripts/query_tags.py get clothing "服装类型/职业制服"
-# → 选: maid outfit, maid headdress
-
-uv run scripts/query_tags.py get scene-environment "半公开空间/教室"
-# → 选: classroom, school desk
-
-# 3. 组装
-prompt = "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, standing, looking at viewer, from front, full body, classroom, school desk, afternoon"
-# (12 标签 → 偏少，需要补表情+服装细节)
-
-# 4. 补全
-# 表情: blush, slight smile || 服装: white apron, frilled socks, mary janes || 细节: motion lines
-prompt = "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, white apron, frilled socks, mary janes, standing, looking at viewer, blush, slight smile, from front, full body, classroom, school desk, afternoon, motion lines"
-# (19 标签 → 在 16-30 范围内 ✅)
-
-# 5. 校验
-uv run scripts/check_prompt.py "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, white apron, frilled socks, mary janes, standing, looking at viewer, blush, slight smile, from front, full body, classroom, school desk, afternoon, motion lines" --scene simple
-
-# 6. 输出
-1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, white apron, frilled socks, mary janes, standing, looking at viewer, blush, slight smile, from front, full body, classroom, school desk, afternoon, motion lines
-```
+完整示例见 `references/example.md`。
 
 ## PROMPT WAREHOUSE
 
