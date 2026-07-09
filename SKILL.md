@@ -20,7 +20,7 @@ compatibility: pyyaml, rapidfuzz (Python 3.10+)
 uv venv && uv pip install pyyaml rapidfuzz
 ```
 
-之后所有脚本用 `.venv/Scripts/python scripts/xxx.py` 运行。
+之后所有脚本用 `uv run scripts/xxx.py` 运行。
 
 ## ROLE
 
@@ -42,9 +42,9 @@ uv venv && uv pip install pyyaml rapidfuzz
    → 确认槽位顺序、标签数量范围、风格一致性约束
 
 3. 翻库填标签（逐槽位）
-   → python .venv/Scripts/python scripts/query_tags.py tree <slot>          # 看分类结构
-   → python .venv/Scripts/python scripts/query_tags.py get <slot> <path>    # 拿标签列表
-   → python .venv/Scripts/python scripts/query_tags.py search <keyword>     # 按关键词找
+   → python uv run scripts/query_tags.py tree <slot>          # 看分类结构
+   → python uv run scripts/query_tags.py get <slot> <path>    # 拿标签列表
+   → python uv run scripts/query_tags.py search <keyword>     # 按关键词找
    → 按槽位顺序 [count→appearance→clothing→pose→expression→camera→scene→detail] 逐个填
 
 4. 特殊主题交叉
@@ -55,12 +55,12 @@ uv venv && uv pip install pyyaml rapidfuzz
    → 自然语言短句放末尾
 
 6. 校验
-   → .venv/Scripts/python scripts/check_prompt.py "<prompt>" --scene <simple|standard|complex>
+   → uv run scripts/check_prompt.py "<prompt>" --scene <simple|standard|complex>
    → 失败则根据 JSON 报告回退修改，直到 "passed": true
 
 7. 输出
    → 仅输出纯文本一行，无任何修饰
-   → 用户说"保存"时: .venv/Scripts/python scripts/warehouse.py add "描述" "prompt" --type <场景>
+   → 用户说"保存"时: uv run scripts/warehouse.py add "描述" "prompt" --type <场景>
 ```
 
 ## OUTPUT PROTOCOL
@@ -77,7 +77,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 
 ## SELF-CHECK CHECKLIST
 
-组装完成后运行 `.venv/Scripts/python scripts/check_prompt.py "<prompt>"`，自动执行：
+组装完成后运行 `uv run scripts/check_prompt.py "<prompt>"`，自动执行：
 
 | # | 检查项 | 子脚本 |
 |---|--------|--------|
@@ -106,7 +106,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 
 注意事项：
 - `--json` 输出必须放在子命令之前：`query_tags.py --json list` ✅
-- 所有脚本通过 `.venv/Scripts/python` 运行
+- 所有脚本通过 `uv run` 运行
 - `query_tags.py` 的写入命令 (add/rm/rename/mv) 会自动生成 .bak 备份
 
 ### 参考文件
@@ -162,19 +162,19 @@ LLM 执行：
 ```bash
 # 1. 读决策树 → 单人展示类 → 槽位侧重在看
 # 2. 翻库
-.venv/Scripts/python scripts/query_tags.py get count-identity "人数与性别/一女"
+uv run scripts/query_tags.py get count-identity "人数与性别/一女"
 # → 1girl, solo
 
-.venv/Scripts/python scripts/query_tags.py get appearance "头发/颜色"
+uv run scripts/query_tags.py get appearance "头发/颜色"
 # → 选: blonde hair
 
-.venv/Scripts/python scripts/query_tags.py get appearance "头发/扎发编发"
+uv run scripts/query_tags.py get appearance "头发/扎发编发"
 # → 选: twin tails
 
-.venv/Scripts/python scripts/query_tags.py get clothing "服装类型/职业制服"
+uv run scripts/query_tags.py get clothing "服装类型/职业制服"
 # → 选: maid outfit, maid headdress
 
-.venv/Scripts/python scripts/query_tags.py get scene-environment "半公开空间/教室"
+uv run scripts/query_tags.py get scene-environment "半公开空间/教室"
 # → 选: classroom, school desk
 
 # 3. 组装
@@ -187,7 +187,7 @@ prompt = "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, whi
 # (19 标签 → 在 16-30 范围内 ✅)
 
 # 5. 校验
-.venv/Scripts/python scripts/check_prompt.py "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, white apron, frilled socks, mary janes, standing, looking at viewer, blush, slight smile, from front, full body, classroom, school desk, afternoon, motion lines" --scene simple
+uv run scripts/check_prompt.py "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, white apron, frilled socks, mary janes, standing, looking at viewer, blush, slight smile, from front, full body, classroom, school desk, afternoon, motion lines" --scene simple
 
 # 6. 输出
 1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, white apron, frilled socks, mary janes, standing, looking at viewer, blush, slight smile, from front, full body, classroom, school desk, afternoon, motion lines
@@ -198,9 +198,9 @@ prompt = "1girl, solo, blonde hair, twin tails, maid outfit, maid headdress, whi
 用户满意后保存：
 
 ```bash
-.venv/Scripts/python scripts/warehouse.py add "金发双马尾女仆在教室" "<prompt>" --type "单人展示"
-.venv/Scripts/python scripts/warehouse.py search "maid"        # 回顾历史
-.venv/Scripts/python scripts/warehouse.py stats                 # 统计
+uv run scripts/warehouse.py add "金发双马尾女仆在教室" "<prompt>" --type "单人展示"
+uv run scripts/warehouse.py search "maid"        # 回顾历史
+uv run scripts/warehouse.py stats                 # 统计
 ```
 
 数据库位于 `warehouse/prompts.db`，支持 SQLite FTS5 全文搜索。
