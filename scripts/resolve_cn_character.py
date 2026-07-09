@@ -3,8 +3,8 @@
 
 默认仅查本地缓存，未命中时提示使用 --bangumi 调用 API 查询并自动写入缓存。
 
-输出 danbooru_name（如 "hatsune_miku"），可 pipe 到 search_character.py：
-  uv run scripts/resolve_cn_character.py 初音未来 | xargs uv run scripts/search_character.py search {} --exact --limit 1 --json
+输出 danbooru_name（如 "hatsune_miku"），可 pipe 到 character_lib.py：
+  uv run scripts/resolve_cn_character.py 初音未来 | xargs uv run scripts/character_lib.py search {} --exact --limit 1 --json
 
 用法:
   uv run scripts/resolve_cn_character.py <中文名>

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Danbooru 角色百科搜索 —— 在 ZIP 压缩包内搜索角色信息，无需解压到文件系统。
+"""Danbooru 角色库搜索与管理 —— 使用 extra（优先）和 danbooru（只读）双源。
 
 用法:
-  uv run scripts/search_character.py search <keyword>
+  uv run scripts/character_lib.py search <keyword>
+  uv run scripts/character_lib.py add <character> --trigger <str> --core-tags <str>
 """
 
 import argparse
@@ -15,12 +16,11 @@ from pathlib import Path
 try:
     from rapidfuzz import fuzz
 except ImportError:
-    fuzz = None  # ty:ignore[invalid-assignment]
+    fuzz = None
 
-CSV_PATH = (
-    Path(__file__).resolve().parent.parent / "tag-library" / "danbooru_character.csv"
-)
-CSV_NAME = "danbooru_character.csv"
+BASE = Path(__file__).resolve().parent.parent / "tag-library"
+EXTRA_PATH = BASE / "extra_characters.csv"
+CSV_PATH = BASE / "danbooru_character.csv"
 
 SEARCH_FIELDS = ["character", "copyright", "trigger", "core_tags"]
 
@@ -34,7 +34,13 @@ def normalize(s: str) -> str:
     return s.translate(_FULLWIDTH).lower().strip()
 
 
-def open_reader():
+def open_extra_reader():
+    if not EXTRA_PATH.exists():
+        return None
+    return csv.DictReader(EXTRA_PATH.open("r", encoding="utf-8"))
+
+
+def open_danbooru_reader():
     if not CSV_PATH.exists():
         download_name = "danbooru_character_webui.csv"
         print(
@@ -46,11 +52,13 @@ def open_reader():
             file=sys.stderr,
         )
         sys.exit(1)
-    text = CSV_PATH.open("r", encoding="utf-8")
-    return csv.DictReader(text)
+    return csv.DictReader(CSV_PATH.open("r", encoding="utf-8"))
 
 
 def search_rows(reader, keyword, fields, limit, threshold, use_exact):
+    if reader is None or limit <= 0:
+        return []
+
     keyword_norm = normalize(keyword)
     heap = []
     counter = 0
@@ -108,19 +116,47 @@ def print_search_results(results, json_output):
 
 
 def cmd_search(args):
-    reader = open_reader()
     fields = (
         [f.strip() for f in args.fields.split(",")] if args.fields else SEARCH_FIELDS
     )
-    results = search_rows(
-        reader, args.keyword, fields, args.limit, args.threshold, args.exact
+
+    extra_reader = open_extra_reader()
+    extra_results = search_rows(
+        extra_reader, args.keyword, fields, args.limit, args.threshold, args.exact
     )
+
+    remaining = args.limit - len(extra_results)
+    danbooru_results = search_rows(
+        open_danbooru_reader(), args.keyword, fields, remaining, args.threshold, args.exact
+    )
+
+    results = extra_results + danbooru_results
     print_search_results(results, args.json)
+
+
+def cmd_add(args):
+    header = ["character", "copyright", "trigger", "core_tags", "count", "solo_count", "url"]
+
+    exists = EXTRA_PATH.exists()
+    with EXTRA_PATH.open("a", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        if not exists:
+            writer.writerow(header)
+        writer.writerow([
+            args.character,
+            args.copyright or "",
+            args.trigger,
+            args.core_tags,
+            "0",
+            "0",
+            "",
+        ])
+    print(f"已添加: {args.character}")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="在 danbooru_character.csv 中搜索角色信息",
+        description="角色库搜索与管理（extra 优先 → danbooru）",
     )
     sub = parser.add_subparsers(title="子命令", dest="subcommand", required=True)
 
@@ -140,9 +176,17 @@ def main():
     sp.add_argument("--limit", type=int, default=10, help="返回条数（默认 10）")
     sp.add_argument("--json", action="store_true", help="JSON 输出")
 
+    ap = sub.add_parser("add", help="向 extra 角色库添加自定义角色")
+    ap.add_argument("character", help="角色名（danbooru 蛇形命名）")
+    ap.add_argument("--trigger", required=True, help="触发词")
+    ap.add_argument("--core-tags", required=True, help="核心标签")
+    ap.add_argument("--copyright", default=None, help="版权/来源")
+
     args = parser.parse_args()
     if args.subcommand == "search":
         cmd_search(args)
+    elif args.subcommand == "add":
+        cmd_add(args)
 
 
 if __name__ == "__main__":
