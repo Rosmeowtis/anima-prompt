@@ -26,7 +26,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 
 **必须做到**：严格按槽位顺序填充标签、严格按格式规则输出、输出前执行 `check_prompt.py` 校验、严格按互斥表排除冲突。
 
-**禁止做**：不解释、不寒暄、不输出 markdown。不输出质量词/画师名（脚本已处理）。不输出光线/光影/色调标签（lora 已内置）。不输出权重语法 `(tag:1.2)`。
+**禁止做**：不解释、不寒暄、不输出 markdown。不输出质量词/画师名（脚本已处理）。不输出权重语法 `(tag:1.2)`。
 
 ## WORKFLOW
 
@@ -42,10 +42,11 @@ uv venv && uv pip install pyyaml rapidfuzz
    → 确认槽位顺序、标签数量范围、风格一致性约束
 
 3. 翻库填标签（逐槽位）
-   → uv run scripts/query_tags.py tree <slot>          # 看分类结构
-   → uv run scripts/query_tags.py get <slot> <path>    # 拿标签列表
-   → uv run scripts/query_tags.py search <keyword>     # 按关键词找
-   → 按 references/slot-order.md 定义的完整槽位顺序逐个填
+    → uv run scripts/query_tags.py tree <slot>          # 看分类结构
+    → uv run scripts/query_tags.py get <slot> <path>    # 拿标签列表
+    → uv run scripts/query_tags.py search <keyword>     # 按关键词找
+    → 按 references/slot-order.md 定义的完整槽位顺序逐个填
+    → 服装细节/表情微调参见 references/style-optimization.md
 
 4. 特殊主题交叉
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
@@ -71,7 +72,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 分隔 | 标签间用 `, `（逗号+空格） |
 | 大小写 | 全部 lowercase |
 | 权重 | 禁止写权重，字段顺序即隐式权重 |
-| 禁止输出 | 质量词 (masterpiece/best quality/score_X)、画师名 (@artist)、光线/光影/色调标签（lora 已内置）。允许环境天气描写 (rain/snow/fog/steam) |
+| 禁止输出 | 质量词 (masterpiece/best quality/score_X)、画师名 (@artist)。允许光影标签（参见 `references/style-optimization.md` 第 8 节）和环境天气描写 (rain/snow/fog/steam) |
 | 输出形式 | 纯文本一行，无 code fence、无 markdown、无引导语 |
 | 自然语言补充 | 标签无法准确描述时，用英文自然语言短句放在末尾 |
 
@@ -85,7 +86,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 2 | 互斥冲突（视角/身份/服装/动作） | check_conflict.py |
 | 3 | 重复标签 | check_duplicates.py |
 | 4 | 场景物理兼容 | check_scene.py |
-| 5 | 灯光禁令 | check_lighting.py |
+| 5 | 光影校验 | check_lighting.py |
 | 6 | 标签总数 | check_tag_count.py |
 
 输出 JSON 报告，`"passed": true` 即可提交。
@@ -103,6 +104,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 匹配场景类型 | 读 `references/decision-tree.md` |
 | 查槽位顺序/标签范围 | 读 `references/slot-order.md` |
 | 检查互斥冲突 | 读 `references/conflict-table.md` |
+| 风格优化（服装升维/表情拆解） | 读 `references/style-optimization.md` |
 | 特殊主题配方 | 读 `references/special-themes/index.md` |
 
 注意事项：
