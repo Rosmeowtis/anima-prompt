@@ -47,6 +47,7 @@ uv venv && uv pip install pyyaml rapidfuzz
     → uv run scripts/query_tags.py search <keyword>     # 按关键词找
     → 按 references/slot-order.md 定义的完整槽位顺序逐个填
     → 服装细节/表情微调参见 references/style-optimization.md
+    → 若用户提到了角色名（中文或英文），跳到 ROLE TAG LOOKUP 节获取标准标签
 
 4. 特殊主题交叉
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
@@ -101,6 +102,8 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 标签增删改移 | `uv run scripts/query_tags.py add/rm/rename/mv` |
 | 一键校验 (6项) | `uv run scripts/check_prompt.py "<prompt>" --scene <simple\|standard\|complex>` |
 | 仓库管理 | `uv run scripts/warehouse.py add/search/stats` |
+| 中文角色名→英文名 | `uv run scripts/resolve_cn_character.py <中文名>` |
+| 查角色标签信息 | `uv run scripts/character_lib.py search <name> --exact [--limit N]` |
 | 匹配场景类型 | 读 `references/decision-tree.md` |
 | 查槽位顺序/标签范围 | 读 `references/slot-order.md` |
 | 检查互斥冲突 | 读 `references/conflict-table.md` |
@@ -124,6 +127,17 @@ uv venv && uv pip install pyyaml rapidfuzz
 | camera/shot | camera-shot.yaml | 景别、视角、POV、构图、体位专属镜头、分镜 |
 | scene | scene-environment.yaml | 场所速查(私密/半公开/公共)、风险矩阵、天气时辰、场景细节 |
 | detail/mood | detail-mood.yaml | 画面质感、运动渲染、光学效果、数字效果、氛围基调、禁令清单 |
+
+## ROLE TAG LOOKUP
+
+当用户描述了角色名（如 "初音未来"、"迷迭香"），获取标准核心标签：
+
+```bash
+uv run scripts/resolve_cn_character.py 迷迭香 | xargs -I{} uv run scripts/character_lib.py search {} --exact --limit 1 --json
+```
+
+首次查询未缓存时会自动提示使用 `--bangumi` 参数。返回的 `core_tags` 填入 appearance 等槽位，
+`copyright` 用于标签组合参考，`trigger` 可作为兜底描述词。
 
 ## FULL EXAMPLE
 
