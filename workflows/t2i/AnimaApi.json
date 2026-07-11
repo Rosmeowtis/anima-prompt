@@ -2,8 +2,8 @@
   "157": {
     "inputs": {
       "seed": 207914032036807,
-      "steps": 12,
-      "cfg": 1,
+      "steps": 30,
+      "cfg": 5,
       "sampler_name": "er_sde",
       "scheduler": "simple",
       "denoise": 1,
