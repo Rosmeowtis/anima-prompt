@@ -16,12 +16,38 @@ from _types import CheckResult
 
 
 def check(prompt: str) -> CheckResult:
-    tags = [t.strip() for t in prompt.split(",") if t.strip()]
-    counter = Counter(tags)
-    dups = [tag for tag, count in counter.items() if count > 1]
-    passed = len(dups) == 0
-    detail = f"重复标签: {', '.join(dups)}" if dups else "无重复"
-    return CheckResult(passed=passed, detail=detail)
+    tokens = [t.strip() for t in prompt.split(",") if t.strip()]
+
+    # Split tokens into zones by BREAK segments
+    zones, current = [], []
+    for t in tokens:
+        if t == "BREAK":
+            zones.append(current)
+            current = []
+        else:
+            current.append(t)
+    zones.append(current)
+
+    # Check duplicates within each zone independently
+    violations = []
+    for i, zone in enumerate(zones):
+        if len(zone) < 2:
+            continue
+        counter = Counter(zone)
+        zone_dups = sorted(tag for tag, count in counter.items() if count > 1)
+        if zone_dups:
+            violations.append((i, zone_dups))
+
+    if not violations:
+        return CheckResult(passed=True, detail="无重复")
+
+    if len(zones) == 1:
+        detail = f"重复标签: {', '.join(violations[0][1])}"
+    else:
+        parts = [f"(区域{idx+1}): {', '.join(dups)}" for idx, dups in violations]
+        detail = f"重复标签: {'; '.join(parts)}"
+
+    return CheckResult(passed=False, detail=detail)
 
 
 def main() -> None:
