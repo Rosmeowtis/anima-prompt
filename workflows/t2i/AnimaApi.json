@@ -1,0 +1,166 @@
+{
+  "157": {
+    "inputs": {
+      "seed": 207914032036807,
+      "steps": 12,
+      "cfg": 1,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": [
+        "156:153",
+        0
+      ],
+      "positive": [
+        "161:158",
+        0
+      ],
+      "negative": [
+        "161:159",
+        0
+      ],
+      "latent_image": [
+        "161:160",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "K采样器"
+    }
+  },
+  "162": {
+    "inputs": {
+      "samples": [
+        "157",
+        0
+      ],
+      "vae": [
+        "156:155",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE解码"
+    }
+  },
+  "163": {
+    "inputs": {
+      "filename_prefix": "%year%-%month%-%day%/API_%hour%%minute%%second%",
+      "images": [
+        "162",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "保存图像"
+    }
+  },
+  "156:154": {
+    "inputs": {
+      "clip_name": "qwen_3_06b_base.safetensors",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "加载CLIP"
+    }
+  },
+  "156:155": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "加载VAE"
+    }
+  },
+  "156:153": {
+    "inputs": {
+      "unet_name": "anima_baseV10.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "UNet加载器"
+    }
+  },
+  "161:158": {
+    "inputs": {
+      "text": [
+        "161:167",
+        0
+      ],
+      "clip": [
+        "156:154",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "正面提示词"
+    }
+  },
+  "161:167": {
+    "inputs": {
+      "string_a": [
+        "161:166",
+        0
+      ],
+      "string_b": [
+        "161:165",
+        0
+      ],
+      "delimiter": ","
+    },
+    "class_type": "StringConcatenate",
+    "_meta": {
+      "title": "连接"
+    }
+  },
+  "161:159": {
+    "inputs": {
+      "text": "worst quality, low quality, early, old, score_1, score_2, score_3, cartoon, graphic, painting, crayon, graphite, abstract, glitch, deformed, mutated, ugly, disfigured, long body, bad anatomy, bad hands, missing fingers, extra fingers, extra digits, fewer digits, cropped, very displeasing, artist name, blurry, jpeg artifacts, lowres, censor",
+      "clip": [
+        "156:154",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "负面提示词"
+    }
+  },
+  "161:160": {
+    "inputs": {
+      "width": 1536,
+      "height": 1536,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "空Latent图像"
+    }
+  },
+  "161:165": {
+    "inputs": {
+      "value": "__PROMPT__"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "内容提示词"
+    }
+  },
+  "161:166": {
+    "inputs": {
+      "value": "masterpiece, best quality, score_9, score_8, score_7, year 2025, newest, highres, absurdres, very aesthetic, scenery,"
+    },
+    "class_type": "PrimitiveStringMultiline",
+    "_meta": {
+      "title": "风格提示词"
+    }
+  }
+}

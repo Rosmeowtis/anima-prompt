@@ -176,7 +176,46 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
 | 特殊主题配方 | 读 `references/special-themes/index.md` |
 | 表情符号参考（emoji/颜文字） | 读 `references/emoticon-reference.md` |
 
-写入规则：所有标签库的增删改移**必须**通过 `manage_tags.py`，禁止绕过脚本直接编辑 YAML（避免格式错误）。
+## CALLING ANIMA API
+
+使用 `call_anima.py` 将组装好的 prompt 发送到远程 Anima API 生图：
+
+```
+uv run scripts/call_anima.py -p "<prompt>" [--ratio <比例>] [--api-url <地址>]
+```
+
+| 参数 | 说明 |
+|------|------|
+| `-p` / `--prompt` | (必需) 替换 `__PROMPT__` 的标签文本 |
+| `-r` / `--ratio` | 画面比例，默认 `1:1`。见下方比例表 |
+| `--api-url` | Anima API 地址，默认 `http://localhost:8188` |
+| `-w` / `--workflow` | workflow JSON 路径，默认 `workflows/t2i/AnimaApi.json` |
+| `-o` / `--output` | 图像保存目录，默认 `./outputs` |
+
+比例预设（总像素 ≈ 2.36M，8 的倍数）：
+
+| ratio | width × height | ratio | width × height |
+|-------|---------------|-------|---------------|
+| 1:1 | 1536 × 1536 | 16:9 | 2048 × 1152 |
+| 9:16 | 1152 × 2048 | 4:3 | 1792 × 1344 |
+| 3:4 | 1344 × 1792 | 3:2 | 1920 × 1280 |
+| 2:3 | 1280 × 1920 | 5:4 | 1728 × 1376 |
+| 4:5 | 1376 × 1728 | | |
+
+可用的 workflow 在 `./workflows/` 目录下查找，分别在 `t2i`（文生图）和 `i2i`（图生图，暂未实现）子目录内。注意每个 workflow 都要遵守约定才能被调用：
+
+1. 文生图：
+   1. 正面提示词使用 `__PROMPT__` 占位。
+   2. 工作流中有且仅有一个 `EmptyLatentImage` 节点，且暴露出可修改的 width、height 参数用于脚本调整图像尺寸。
+2. 图生图（未实现，忽略）
+
+示例调用：
+
+```bash
+uv run scripts/call_anima.py -p "1girl, solo, black hair, blue eyes" --ratio 16:9
+```
+
+流程：加载 workflow → 注入 prompt → 提交任务（120s 超时）→ 轮询结果（每 10s，最多 5min）→ 下载图像到 `--output`。
 
 ### 标签库文件
 
@@ -197,6 +236,8 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
 | camera-shot | 景别、视角、POV、构图、体位专属镜头、分镜 |
 | scene-environment | 场所速查(私密/半公开/公共)、风险矩阵、天气时辰、场景细节 |
 | detail-mood | 画面质感、运动渲染、光学效果、数字效果、氛围基调、禁令清单 |
+
+写入规则：所有标签库的增删改移**必须**通过 `manage_tags.py`，禁止绕过脚本直接编辑 YAML（避免格式错误）。
 
 ## ROLE TAG LOOKUP
 

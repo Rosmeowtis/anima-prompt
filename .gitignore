@@ -29,3 +29,10 @@ Thumbs.db
 *.swo
 
 danbooru_character.csv
+*.png
+.cache
+
+# workflows
+workflows/t2i/*
+workflows/i2i/*
+!workflows/t2i/AnimaApi.json
