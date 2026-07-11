@@ -109,7 +109,9 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
 
 5. 组装
-   → 按槽位顺序拼接为一行，标签间 ", " 分隔，全部 lowercase
+   → 单人场景：按槽位顺序拼接，标签间 ", " 分隔
+   → 多人场景：人数 → 共享互动词 → [A: appearance → clothing → solo-action → expression] BREAK [B: ...] → 共享 camera → scene → detail/mood → 自然语言
+   → 全部 lowercase
    → 自然语言短句放末尾
 
 6. 校验
@@ -127,6 +129,7 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
 |------|------|
 | 行数 | 仅 1 行，无换行 |
 | 分隔 | 标签间用 `, `（逗号+空格） |
+| BREAK | 多人场景用 `BREAK` 分隔角色 block，BREAK 前后用 `, ` 连接 |
 | 大小写 | 全部 lowercase |
 | 权重 | 禁止写权重，字段顺序即隐式权重 |
 | 禁止输出 | 质量词 (masterpiece/best quality/score_X)、画师名 (@artist)。允许光影标签（参见 `references/style-optimization.md` 第 8 节）和环境天气描写 (rain/snow/fog/steam) |

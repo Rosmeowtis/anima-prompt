@@ -29,16 +29,16 @@ AI 拿到需求后，首先在本章匹配场景类型，获取槽位侧重和�
 
 ### 5.2 双人前戏类（口交/足交/素股/手交/乳交/调戏）
 
-**槽位顺序**：`count/gender → appearance ×2 → clothing/state → pose/action（含深度/技法维度）→ expression/reaction → camera/shot → scene`
+**槽位顺序**：
+`[count/gender] → [shared-interaction] → [A: appearance → clothing → solo-action → expression] BREAK [B: appearance → clothing → solo-action → expression] → [camera/shot] → [scene]`
 
 | 槽位 | 侧重 | 参考章节 |
 |---|---|---|
 | count/gender | `1girl, 1boy, hetero` | §6 |
-| appearance | 女方≥3锚点，男方1-2个（发色+体型/肤色） | §7 |
-| clothing | 女方1件服装+1状态，男方留 `clothed male` / `faceless male` 或 `nude male` | §8 |
-| pose/action | 核心体位+1-2变体维度：口交选深度+情绪、足交选姿势+足部状态、素股选体位+润滑、手交选技法+场景、乳交选体位+附加刺激、调戏选权力关系+场景 | §9.2 |
-| expression | 按前戏强度取Lv1-2，除非强制深喉/过激 | §10.2 |
-| camera | 口交 `pov, from above`；足交 `from side, feet focus`；乳交 `close-up, breast focus`；调戏 `cowboy shot` | §11.5 |
+| shared-interaction | 核心前戏体位（fellatio/footjob/paizuri/handjob）+ 技法维度 + 场景关系 | §9.2 |
+| **A block** (BREAK 前) | 女方：appearance≥3锚点 → 服装+状态 → 独有动作（手/腿位置等）→ 表情 | §7, §8, §9.2, §10 |
+| **B block** (BREAK 后) | 男方：appearance 精简（发色+体型）→ clothed/faceless/nude male → 独有动作 → 表情（可省略） | §7, §8, §9.2, §10 |
+| camera/shot | 口交 `pov, from above`；足交 `from side, feet focus`；乳交 `close-up, breast focus`；调戏 `cowboy shot` | §11.5 |
 | scene | 场所配前戏类型：桌下口交→餐厅；足交/素股→卧室/沙发；调戏→电车/办公室 | §12 |
 
 **特殊主题交叉**：若前戏属胁迫/偷窥/隐奸，先查 §14 对应章节获取跨槽位标签。
@@ -47,16 +47,16 @@ AI 拿到需求后，首先在本章匹配场景类型，获取槽位侧重和�
 
 ### 5.3 双人正戏类（传教士/站立/坐位/后入/火车便当/种付/骑乘）
 
-**槽位顺序**：`count/gender → appearance ×2 → clothing/state → pose/action（含体位变体维度）→ expression/reaction → camera/shot → scene → detail/mood`
+**槽位顺序**：
+`[count/gender] → [shared-interaction] → [A: appearance → clothing → solo-action → expression] BREAK [B: appearance → clothing → solo-action → expression] → [camera/shot] → [scene] → [detail/mood]`
 
 | 槽位 | 侧重 | 参考章节 |
 |---|---|---|
 | count/gender | `1girl, 1boy, hetero`，有体型差加 `height difference` | §6 |
-| appearance | 女方≥3锚点+可加身体部位强调（私处/足部/胸部按体位选），男方精简 | §7 |
-| clothing | 女方：服装状态是核心——半脱/掀起/全裸/破损/湿透。改造维度≤2层。男方：`faceless male` / `clothed male nude female` | §8 |
-| pose/action | 选体位→查体位维度表→选2-3个维度组合。例：传教士=腿态+压制+深度 | §9.3 |
-| expression | 按强度映射→默认Lv2，冲击/冲刺阶段Lv3 | §10.2 |
-| camera | 按 §11.5 体位专属镜头表选取，1个体位配1-2个视角 | §11.5 |
+| shared-interaction | 核心体位（missionary/doggystyle/cowgirl）+ 变体维度（legs up/pinned down/深度等），选2-3个维度组合 | §9.3 |
+| **A block** (BREAK 前) | 女方：appearance≥3锚点+身体部位强调 → 服装状态（半脱/全裸/破损等）→ 独有动作 → 表情（默认Lv2，冲刺Lv3） | §7, §8, §9.3, §10 |
+| **B block** (BREAK 后) | 男方：appearance 精简 → faceless/clothed/nude male → 独有动作 → 表情（可省略） | §7, §8, §9.3, §10 |
+| camera/shot | 按 §11.5 体位专属镜头表选取，1个体位配1-2个视角 | §11.5 |
 | scene | 1个主场所+1个环境道具，按场景心理选风险等级 | §12 |
 | detail/mood | 运动渲染选1个（motion lines/blur），氛围词选1个 | §13 |
 
@@ -66,7 +66,7 @@ AI 拿到需求后，首先在本章匹配场景类型，获取槽位侧重和�
 
 ### 5.4 特殊体位类（睡奸/催眠/攻守反转/过激）
 
-**槽位顺序**：同5.3，但需额外注意以下槽位的特殊标签要求：
+**槽位顺序**：同 5.3 BREAK 格式，但需额外注意以下槽位的特殊标签要求：
 
 | 类型 | 额外槽位要求 | 参考章节 |
 |---|---|---|
@@ -79,16 +79,18 @@ AI 拿到需求后，首先在本章匹配场景类型，获取槽位侧重和�
 
 ### 5.5 多人/群交类
 
-**槽位顺序**：`count/gender（精确人数）→ appearance ×N → clothing/state → pose/action → expression/reaction → camera/shot → scene → detail/mood`
+**槽位顺序**：
+`[count/gender] → [shared-interaction] → [A: appearance → clothing → solo-action → expression] BREAK [B: ...] BREAK [C: ...] ... → [camera/shot] → [scene] → [detail/mood]`
 
 | 槽位 | 侧重 | 参考章节 |
 |---|---|---|
 | count/gender | 精确人数 `Xboys, multiple boys, group sex`，X为实际数量 | §6 |
-| appearance | 每个角色≥3锚点防串脸，男方可用 `faceless male` 简化 | §7 |
-| pose/action | 选孔穴占用类型（spitroast/triple/dp）+包围程度；体液层次选上限 | §9.4 |
-| expression | 女方默认Lv3-4，多男方可省略表情 | §10.2 |
+| shared-interaction | 选孔穴占用类型（spitroast/triple/dp）+ 包围程度；体液层次选上限 | §9.4 |
+| **A/B/C blocks** | 每个≥3锚点防串脸，男方可用 `faceless male` 简化。每 block 结束后加 BREAK | §7, §9.4 |
+| expression | 女方默认Lv3-4，多男方可省略表情（放入各自 block） | §10.2 |
 | camera | `from above, full body` 容纳全员；spitroast 用 `from side` | §11.5 |
 | scene | 大空间 `bedroom/dungeon/public`，配人群 `surrounded/crowd` | §12 |
+| detail/mood | 按需 | §13 |
 
 **特殊主题交叉**：若为 RBQ/轮奸/胁迫性群交，先查 §14.3/§14.7 获取物化/体液/胁迫标签。
 
@@ -96,13 +98,14 @@ AI 拿到需求后，首先在本章匹配场景类型，获取槽位侧重和�
 
 ### 5.6 百合类
 
-**槽位顺序**：`count/gender → appearance ×2 → clothing/state → pose/action → expression/reaction → camera/shot → scene`
+**槽位顺序**：
+`[count/gender] → [shared-interaction] → [A: appearance → clothing → solo-action → expression] BREAK [B: appearance → clothing → solo-action → expression] → [camera/shot] → [scene]`
 
 | 槽位 | 侧重 | 参考章节 |
 |---|---|---|
 | count/gender | `2girls, yuri` | §6 |
-| pose/action | 选互动类型（cunnilingus/tribadism/fingering/double dildo）+体位 | §9.5 |
-| expression | Lv1-2为主，两个女方可不同表情 | §10.2 |
+| shared-interaction | 互动类型（cunnilingus/tribadism/fingering/double dildo）+ 体位 | §9.5 |
+| **A/B blocks** | 每人：appearance → 服装 → 独有动作 → 表情（Lv1-2为主，可不同） | §7, §8, §9.5, §10 |
 | camera | `from side` 展示互动，scissoring 用 `from above` | §11.5 |
 
 ---

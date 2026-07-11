@@ -2,7 +2,9 @@
 
 标签填充必须严格按以下槽位顺序。靠前的槽位权重更高，把最重要的视觉元素放在前面。
 
-格式: [count/gender] → [character/series] → [appearance] → [clothing/state] → [pose/action/sex] → [expression/reaction] → [camera/shot] → [scene/environment] → [detail/mood] → [natural language: 关系/动作/剧情补充]
+格式（单人）: [count/gender] → [character/series] → [appearance] → [clothing/state] → [pose/action] → [expression/reaction] → [camera/shot] → [scene/environment] → [detail/mood] → [natural language]
+
+格式（多人）: [count/gender] → [shared-interaction] → [A: appearance → clothing → solo-action → expression] BREAK [B: ...] → [camera/shot] → [scene/environment] → [detail/mood] → [natural language]
 
 ---
 
@@ -49,7 +51,7 @@
 
 **单人场景**：除非用户明确要求「背影/背对/转身离开/侧脸/profile/from behind」，否则必须注入 `direct eye contact, facing viewer`。该标签放在 expression 槽末尾或 camera 槽开头均可。
 
-**两人及以上场景**：不强制注入 `direct eye contact`。根据角色间互动关系选择合适的视线标签（如 `looking at another`），或由用户明确指定。
+**两人及以上场景**：不强制注入 `direct eye contact`。根据角色间互动关系选择合适的视线标签（如 `looking at another`）。每个角色的视线标签放入各自角色 block 中。
 
 | 用户意图 | 适用 | 输出 |
 |---|---|---|
@@ -94,12 +96,23 @@
 
 ### 4.6 多人场景角色规则
 
-**极重要**：多人场景中，只写角色名而不补外观会导致模型混淆，**必须为每个角色补充关键外观描述**。
+**极重要**：多人场景中，只写角色名而不补外观会导致模型混淆，**必须为每个角色补充完整的外观和动作描述**。推荐用 `BREAK` 物理分隔角色 block，避免属性跨角色串味。
 
-- 结构：人数 → 角色 A 的外观短语 → 角色 B 的外观短语 → 共享 tag（体位、镜头、场景等） → 关系/动作/剧情描述（自然语言，放末尾）
-- 每个角色的外观用简短描述词组（`角色名 with 发色 + 瞳色 + 关键特征`），不要把动作表情混入
-- 动作、关系、剧情等需要自然语言表达的内容，统一放在 prompt 末尾
+**结构**：
+```
+人数 → 共享互动词（体位/对望/拥抱等涉及两人的标签）→
+角色 A（appearance → clothing → solo-action → expression）BREAK
+角色 B（appearance → clothing → solo-action → expression）→
+共享标签（camera → scene → detail/mood）→
+自然语言（放末尾）
+```
+
+- **共享互动词**：描述两人关系的标签，如 `yuri, holding hands, missionary, fellatio`。紧跟在人数标签之后。
+- **角色 block**：每个角色包含完整的外观、服装、独有动作和表情。block 内保持子槽位顺序一致。
+- **BREAK**：作为逗号分隔序列中的一个分隔元素，物理隔断前后角色 block。
+- **独有动作**：不涉及另一角色的自身动作（如 `one hand making a v sign`），放入对应角色 block。
+- **自然语言**：关系/剧情等 tag 无法表达的内容，统一放在 prompt 末尾。
 
 **示例**：
 - ❌ 错误：`raiden shogun, long purple hair, playful, yae miko, pink hair, embarrassed, skirt lift`（模型无法判断属性归属）
-- ✅ 正确：`2girls, raiden shogun with long purple hair and purple eyes, yae miko with long pink hair and fox ears, skirt lift, shrine, one playfully lifting the other's skirt with a mischievous smirk while the other looks shy and embarrassed`
+- ✅ 正确：`2girls, skirt lift, raiden shogun with long purple hair and purple eyes, naval outfit, smiling mischievously, BREAK, yae miko with long pink hair and fox ears, shrine maiden outfit, blushing, looking away, from above, full body, shrine, one playfully lifting the other's skirt with a mischievous smirk while the other looks shy and embarrassed`
