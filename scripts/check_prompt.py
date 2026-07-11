@@ -57,7 +57,7 @@ def main() -> None:
     for check_name, check_fn in CHECKS:
         try:
             if check_name == "tag_count":
-                result = check_fn(prompt, args.scene)
+                result = check_fn(prompt, args.scene)  # ty:ignore[too-many-positional-arguments]
             else:
                 result = check_fn(prompt)
         except Exception as e:

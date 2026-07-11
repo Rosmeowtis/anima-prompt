@@ -14,9 +14,9 @@ from dataclasses import asdict
 from _types import CheckResult
 
 RANGES = {
-    "simple":   (16, 30, "单人展示/诱惑/暴露/自慰"),
-    "standard": (22, 38, "双人性交/前戏"),
-    "complex":  (30, 48, "多人/特殊主题/剧情主视觉"),
+    "simple":   (20, 40, "单人展示/诱惑/暴露/自慰"),
+    "standard": (25, 50, "双人性交/前戏"),
+    "complex":  (30, 60, "多人/特殊主题/剧情主视觉"),
 }
 
 
@@ -32,7 +32,7 @@ def check(prompt: str, scene: str = "") -> CheckResult:
         passed = True
         detail = f"标签数={count}"
         # 给出宽松建议
-        if count < 10:
+        if count < 20:
             detail += " (偏少)"
             passed = False
         elif count > 60:
