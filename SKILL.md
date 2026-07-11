@@ -5,7 +5,7 @@ description: >
   Anima 出图、二次元/动漫风格标签转写、NSFW 场景描述转 prompt、角色+场景+动作标签组装时使用。
   只要用户的请求涉及"生成 prompt / 提示词 / 标签 / 出图描述"，都应使用此技能。
   NOT for: 通用 Stable Diffusion prompt、自然语言场景描写（非标签格式）、非 Anima 模型的 prompt。
-compatibility: pyyaml, rapidfuzz (Python 3.10+)
+compatibility: pyyaml (Python 3.10+)
 ---
 
 # Anima Prompt Engineer
@@ -17,7 +17,7 @@ compatibility: pyyaml, rapidfuzz (Python 3.10+)
 如果 `scripts/` 下的 Python 脚本运行失败（ImportError），说明依赖未安装。执行：
 
 ```bash
-uv venv && uv pip install pyyaml rapidfuzz
+uv venv && uv pip install pyyaml
 ```
 
 之后所有脚本用 `uv run scripts/xxx.py` 运行。
@@ -41,13 +41,13 @@ uv venv && uv pip install pyyaml rapidfuzz
    → 读 references/slot-order.md
    → 确认槽位顺序、标签数量范围、风格一致性约束
 
-3. 翻库填标签（逐槽位）
-    → uv run scripts/query_tags.py tree <slot>          # 看分类结构
-    → uv run scripts/query_tags.py get <slot> <path>    # 拿标签列表
-    → uv run scripts/query_tags.py search <keyword>     # 按关键词找
-    → 按 references/slot-order.md 定义的完整槽位顺序逐个填
+3. 翻库填标签
+    → uv run scripts/manage_tags.py overview             # 先看目录结构（slot → 类目 → 子类目+行号）
+    → Read `tag-library/tags.yaml` offset=<行号> limit=60  # 精准读目标区域
+    → 按 references/slot-order.md 的顺序逐个槽位搜索匹配
     → 服装细节/表情微调参见 references/style-optimization.md
     → 若用户提到了名字，其可能是角色名（中文或英文），跳到 ROLE TAG LOOKUP 节获取标准标签
+    → 增/删/改/移标签强制使用 manage_tags.py（禁止直接编辑 YAML）
 
 4. 特殊主题交叉
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
@@ -96,10 +96,14 @@ uv venv && uv pip install pyyaml rapidfuzz
 
 | 需要... | 使用 |
 |---------|------|
-| 查看槽位分类树 | `uv run scripts/query_tags.py tree <slot>` |
-| 读取标签列表 | `uv run scripts/query_tags.py get <slot> <path>` |
-| 搜索标签 | `uv run scripts/query_tags.py search <keyword>` |
-| 标签增删改移 | `uv run scripts/query_tags.py add/rm/rename/mv` |
+| 浏览目录结构（含行号） | `uv run scripts/manage_tags.py overview [--slot <name>]` |
+| 读取标签列表 | `Read tag-library/tags.yaml offset=<行号> limit=60` |
+| 添加标签 | `uv run scripts/manage_tags.py add <slot> <path> <tag>` |
+| 删除标签 | `uv run scripts/manage_tags.py rm <slot> <path> <tag>` |
+| 重命名标签 | `uv run scripts/manage_tags.py rename <slot> <path> <old> <new>` |
+| 移动标签 | `uv run scripts/manage_tags.py mv <slot> <old_path> <tag> <new_path>` |
+| 新增分类 | `uv run scripts/manage_tags.py add-cat <slot> <path>` |
+| 删除分类 | `uv run scripts/manage_tags.py rm-cat <slot> <path>` |
 | 一键校验 (6项) | `uv run scripts/check_prompt.py "<prompt>" --scene <simple\|standard\|complex>` |
 | 仓库管理 | `uv run scripts/warehouse.py add/search/stats` |
 | 中文角色名→英文名 | `uv run scripts/resolve_cn_character.py <中文名>` |
@@ -110,23 +114,22 @@ uv venv && uv pip install pyyaml rapidfuzz
 | 风格优化（服装升维/表情拆解） | 读 `references/style-optimization.md` |
 | 特殊主题配方 | 读 `references/special-themes/index.md` |
 
-注意事项：
-- `--json` 放在子命令之前：`query_tags.py --json list`
-- 写入命令自动生成 `.bak` 备份
-- 查询标签库使用脚本，**不要直接读 YAML**
+写入规则：所有标签库的增删改移**必须**通过 `manage_tags.py`，禁止绕过脚本直接编辑 YAML（避免格式错误）。
 
 ### 标签库文件
 
-| 槽位 | 文件 | 典型内容 |
-|------|------|----------|
-| count/gender | count-identity.yaml | 人数性别、IP角色、体型差 |
-| appearance | appearance.yaml | 发色发型、瞳色、体型、肤色、非人特征、标记 |
-| clothing/state | clothing.yaml | 服装类型、材质、穿着状态、7维改造、反差公式、道具 |
-| pose/action | pose-action.yaml | 单人4节、双人前戏6节、双人正戏11节、多人、百合、氛围链 |
-| expression | expression.yaml | 表情维度、强度映射(Lv1-Lv4)、身体反应、液体层次、身体痕迹 |
-| camera/shot | camera-shot.yaml | 景别、视角、POV、构图、体位专属镜头、分镜 |
-| scene | scene-environment.yaml | 场所速查(私密/半公开/公共)、风险矩阵、天气时辰、场景细节 |
-| detail/mood | detail-mood.yaml | 画面质感、运动渲染、光学效果、数字效果、氛围基调、禁令清单 |
+所有槽位于 `tag-library/tags.yaml`，slot 名作顶层 key，内部保留树结构。完整槽位列表：
+
+| slot 名 | 典型内容 |
+|---------|----------|
+| count-identity | 人数性别、IP角色、体型差 |
+| appearance | 发色发型、瞳色、体型、肤色、非人特征、标记 |
+| clothing | 服装类型、材质、穿着状态、7维改造、反差公式、道具 |
+| pose-action | 单人4节、双人前戏6节、双人正戏11节、多人、百合、氛围链 |
+| expression | 表情维度、强度映射(Lv1-Lv4)、身体反应、液体层次、身体痕迹 |
+| camera-shot | 景别、视角、POV、构图、体位专属镜头、分镜 |
+| scene-environment | 场所速查(私密/半公开/公共)、风险矩阵、天气时辰、场景细节 |
+| detail-mood | 画面质感、运动渲染、光学效果、数字效果、氛围基调、禁令清单 |
 
 ## ROLE TAG LOOKUP
 

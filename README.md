@@ -9,7 +9,7 @@
 ## 快速开始 / Quick Start
 
 ```bash
-uv venv && uv pip install pyyaml rapidfuzz
+uv venv && uv pip install pyyaml
 ```
 
 之后所有命令通过 `uv run scripts/xxx.py` 执行。All commands run via `uv run scripts/xxx.py`.
@@ -19,7 +19,7 @@ uv venv && uv pip install pyyaml rapidfuzz
 anima-prompt 是一个 **OpenCode Skill** 工具仓库，专为 Anima3 二次元图像生成模型设计。它提供：
 
 - **8 个槽位的标签库**（人数、外貌、服装、动作、表情、镜头、场景、氛围）
-- **9 个 Python 脚本**：查询标签、校验 prompt、管理仓库、解析角色名
+- **8 个 Python 脚本**：管理标签、校验 prompt、管理仓库、解析角色名
 - **交互规则与互斥表**：自动检查人数/冲突/重复/场景/灯光/标签数
 - **Prompt 仓库**：SQLite FTS5 全文搜索，沉淀高质量 prompt
 
@@ -31,11 +31,11 @@ This is an **OpenCode Skill** repository for the Anima3 anime image generation m
 anima-prompt/
 ├── SKILL.md              # 核心 Skill 定义 — OpenCode 加载此文件
 ├── AGENTS.md             # AI 助手运行守则
-├── pyproject.toml        # Python 依赖声明 (pyyaml, rapidfuzz)
+├── pyproject.toml        # Python 依赖声明 (pyyaml)
 ├── .python-version       # Python 3.11
 │
-├── scripts/              # 9 个工具脚本
-│   ├── query_tags.py           # 标签库增删改查
+├── scripts/              # 8 个工具脚本
+│   ├── manage_tags.py          # 标签库浏览(overview)+增删改移（禁止直接编辑 YAML）
 │   ├── check_prompt.py        # 六项校验（人数/冲突/重复/场景/灯光/标签数）
 │   ├── character_lib.py       # 角色标签搜索（danbooru ZIP）
 │   ├── resolve_cn_character.py # 中文→英文角色名解析（Bangumi API）
@@ -44,15 +44,8 @@ anima-prompt/
 │   ├── check_lighting.py / check_scene.py / check_tag_count.py
 │   └── _types.py              # 类型定义
 │
-├── tag-library/           # 标签库 YAML（8 槽位）
-│   ├── count-identity.yaml    # 人数/性别/IP角色
-│   ├── appearance.yaml        # 发色/瞳色/体型/非人特征
-│   ├── clothing.yaml          # 服装/状态/道具
-│   ├── pose-action.yaml       # 动作/体位/氛围链
-│   ├── expression.yaml        # 表情/身体反应/液体/痕迹
-│   ├── camera-shot.yaml       # 景别/视角/POV/构图
-│   ├── scene-environment.yaml # 场所/天气/时辰
-│   ├── detail-mood.yaml       # 质感/光学/氛围/禁令清单
+├── tag-library/           # 标签库 YAML（单文件，slot 名作顶层 key）
+│   ├── tags.yaml              # 全量标签（8 槽位树结构合并）
 │   ├── cn_char_map.yaml       # 中文→英文角色名缓存
 │   ├── extra_characters.csv   # 额外角色数据
 │   └── danbooru_character.zip # Danbooru 角色数据
@@ -93,9 +86,10 @@ anima-prompt/
 
 | 用途 | 命令 |
 |------|------|
-| 查看槽位树 | `uv run scripts/query_tags.py tree <slot>` |
-| 读取标签列表 | `uv run scripts/query_tags.py get <slot> <path>` |
-| 搜索标签 | `uv run scripts/query_tags.py search <keyword>` |
+| 浏览目录结构 | `uv run scripts/manage_tags.py overview [--slot <name>]` |
+| 添加标签 | `uv run scripts/manage_tags.py add <slot> <path> <tag>` |
+| 删除标签 | `uv run scripts/manage_tags.py rm <slot> <path> <tag>` |
+| 重命名标签 | `uv run scripts/manage_tags.py rename <slot> <path> <old> <new>` |
 | 六项校验 | `uv run scripts/check_prompt.py "<prompt>" --scene <scene>` |
 | 中文角色名解析 | `uv run scripts/resolve_cn_character.py <中文名>` |
 | 角色标签查询 | `uv run scripts/character_lib.py search <name> --exact` |
@@ -120,7 +114,6 @@ cp agents/anima-checker.md .opencode/agents/
 - **Python** >= 3.10（推荐 3.11）
 - **uv** — Python 包管理器（非 pip）
 - **pyyaml** — YAML 解析
-- **rapidfuzz** — 模糊字符串匹配
 - **SQLite FTS5** — Prompt 仓库全文搜索（Python 内置）
 
 ## 许可 / License
