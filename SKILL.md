@@ -47,7 +47,7 @@ uv venv && uv pip install pyyaml rapidfuzz
     → uv run scripts/query_tags.py search <keyword>     # 按关键词找
     → 按 references/slot-order.md 定义的完整槽位顺序逐个填
     → 服装细节/表情微调参见 references/style-optimization.md
-    → 若用户提到了角色名（中文或英文），跳到 ROLE TAG LOOKUP 节获取标准标签
+    → 若用户提到了名字，其可能是角色名（中文或英文），跳到 ROLE TAG LOOKUP 节获取标准标签
 
 4. 特殊主题交叉
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
