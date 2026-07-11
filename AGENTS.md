@@ -15,7 +15,8 @@
 | `uv run scripts/query_tags.py tree <slot>` | 查看槽位分类树 |
 | `uv run scripts/query_tags.py get <slot> <path>` | 读取标签列表 |
 | `uv run scripts/query_tags.py search <keyword>` | 搜索标签 |
-| `uv run scripts/check_prompt.py "<prompt>"` | 六项校验（人数/冲突/重复/场景/灯光/标签数） |
+| `uv run scripts/check_prompt.py "<prompt>" [--nsfw]` | 七项校验（人数/冲突/重复/场景/灯光/标签数/NSFW检测）。默认 SFW 模式，含 NSFW 标签报错；`--nsfw` 允许 NSFW |
+| `uv run scripts/check_nsfw.py "<prompt>"` | 独立 NSFW 标签检测 |
 | `uv run scripts/warehouse.py add/search/stats` | prompt 仓库管理 |
 
 ## 注意事项

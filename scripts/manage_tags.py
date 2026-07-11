@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """标签管理工具 —— 概览浏览 + 增删改移标签和分类。
 
-浏览: uv run scripts/manage_tags.py overview [--slot <name>]
-写入: uv run scripts/manage_tags.py add|rm|rename|mv|add-cat|rm-cat ...
+浏览: uv run scripts/manage_tags.py [--nsfw] overview [--slot <name>]
+写入: uv run scripts/manage_tags.py [--nsfw] add|rm|rename|mv|add-cat|rm-cat ...
+
+--nsfw 操作 NSFW 标签库（tags_nsfw.yaml），默认操作 SFW 库（tags_sfw.yaml）。
 
 禁止 Agent 直接编辑 YAML，所有写入操作必须通过此脚本。
 """
@@ -14,7 +16,7 @@ from typing import Any
 
 import yaml
 
-TAGS_PATH = Path(__file__).resolve().parent.parent / "tag-library" / "tags.yaml"
+TAGS_DIR = Path(__file__).resolve().parent.parent / "tag-library"
 
 SLOT_KEYS = [
     "count-identity",
@@ -28,12 +30,16 @@ SLOT_KEYS = [
 ]
 
 
-def _load() -> dict[str, Any]:
-    with open(TAGS_PATH, encoding="utf-8") as f:
+def _tags_path(nsfw: bool = False) -> Path:
+    return TAGS_DIR / ("tags_nsfw.yaml" if nsfw else "tags_sfw.yaml")
+
+
+def _load(nsfw: bool = False) -> dict[str, Any]:
+    with open(_tags_path(nsfw), encoding="utf-8") as f:
         return yaml.safe_load(f) or {}
 
 
-def _save(data: dict[str, Any]) -> None:
+def _save(data: dict[str, Any], nsfw: bool = False) -> None:
     def _str_representer(dumper, value):
         if '\n' in value:
             return dumper.represent_scalar('tag:yaml.org,2002:str', value, style='|')
@@ -41,7 +47,7 @@ def _save(data: dict[str, Any]) -> None:
 
     yaml.add_representer(str, _str_representer, Dumper=yaml.SafeDumper)
 
-    with open(TAGS_PATH, "w", encoding="utf-8") as f:
+    with open(_tags_path(nsfw), "w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=True)
 
 
@@ -67,7 +73,7 @@ def _get_slot_data(data: dict, slot: str) -> dict:
 
 
 def cmd_add(args: argparse.Namespace) -> None:
-    data = _load()
+    data = _load(args.nsfw)
     slot_data = _get_slot_data(data, args.slot)
     value = _resolve(slot_data, args.path)
     if not isinstance(value, list):
@@ -77,12 +83,12 @@ def cmd_add(args: argparse.Namespace) -> None:
         print(f"警告: 标签 '{args.tag}' 已存在，跳过", file=sys.stderr)
         return
     value.append(args.tag)
-    _save(data)
+    _save(data, args.nsfw)
     print(f"已添加: [{args.slot}] {args.path} → {args.tag}")
 
 
 def cmd_rm(args: argparse.Namespace) -> None:
-    data = _load()
+    data = _load(args.nsfw)
     slot_data = _get_slot_data(data, args.slot)
     value = _resolve(slot_data, args.path)
     if not isinstance(value, list):
@@ -92,12 +98,12 @@ def cmd_rm(args: argparse.Namespace) -> None:
         print(f"错误: 标签 '{args.tag}' 不存在", file=sys.stderr)
         sys.exit(1)
     value.remove(args.tag)
-    _save(data)
+    _save(data, args.nsfw)
     print(f"已删除: [{args.slot}] {args.path} → {args.tag}")
 
 
 def cmd_rename(args: argparse.Namespace) -> None:
-    data = _load()
+    data = _load(args.nsfw)
     slot_data = _get_slot_data(data, args.slot)
     value = _resolve(slot_data, args.path)
     if not isinstance(value, list):
@@ -111,17 +117,17 @@ def cmd_rename(args: argparse.Namespace) -> None:
         sys.exit(1)
     idx = value.index(args.old)
     value[idx] = args.new
-    _save(data)
+    _save(data, args.nsfw)
     print(f"已重命名: [{args.slot}] {args.path} → {args.old} → {args.new}")
 
 
 def cmd_mv(args: argparse.Namespace) -> None:
-    cmd_rm(argparse.Namespace(slot=args.slot, path=args.old_path, tag=args.tag))
-    cmd_add(argparse.Namespace(slot=args.slot, path=args.new_path, tag=args.tag))
+    cmd_rm(argparse.Namespace(slot=args.slot, path=args.old_path, tag=args.tag, nsfw=args.nsfw))
+    cmd_add(argparse.Namespace(slot=args.slot, path=args.new_path, tag=args.tag, nsfw=args.nsfw))
 
 
 def cmd_add_cat(args: argparse.Namespace) -> None:
-    data = _load()
+    data = _load(args.nsfw)
     slot_data = _get_slot_data(data, args.slot)
     parts = [p.strip() for p in args.path.split("/") if p.strip()]
     if not parts:
@@ -137,12 +143,12 @@ def cmd_add_cat(args: argparse.Namespace) -> None:
         print(f"警告: 分类 '{new_cat}' 已存在，跳过", file=sys.stderr)
         return
     parent[new_cat] = []
-    _save(data)
+    _save(data, args.nsfw)
     print(f"已添加分类: [{args.slot}] {args.path}")
 
 
 def cmd_rm_cat(args: argparse.Namespace) -> None:
-    data = _load()
+    data = _load(args.nsfw)
     slot_data = _get_slot_data(data, args.slot)
     value = _resolve(slot_data, args.path)
     if not isinstance(value, dict) and not isinstance(value, list):
@@ -161,13 +167,13 @@ def cmd_rm_cat(args: argparse.Namespace) -> None:
     parent = _resolve(slot_data, parent_path) if parent_path else slot_data
     if isinstance(parent, dict) and cat_name in parent:
         del parent[cat_name]
-    _save(data)
+    _save(data, args.nsfw)
     print(f"已删除分类: [{args.slot}] {args.path}")
 
 
 def cmd_overview(args: argparse.Namespace) -> None:
     """列出 1~3 级标题（slot → L1 → L2）及对应行号。"""
-    with open(TAGS_PATH, encoding="utf-8") as f:
+    with open(_tags_path(args.nsfw), encoding="utf-8") as f:
         lines = f.readlines()
 
     current_slot = None
@@ -202,6 +208,7 @@ def cmd_overview(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="标签管理工具")
+    parser.add_argument("--nsfw", action="store_true", help="操作 NSFW 标签库")
     sub = parser.add_subparsers(dest="command")
 
     p_add = sub.add_parser("add", help="增加标签")

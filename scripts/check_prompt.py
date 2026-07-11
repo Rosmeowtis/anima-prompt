@@ -19,6 +19,7 @@ from _types import CheckResult, Report
 from check_count import check as check_count
 from check_conflict import check as check_conflict
 from check_duplicates import check as check_duplicates
+from check_nsfw import check as check_nsfw
 from check_scene import check as check_scene
 from check_lighting import check as check_lighting
 from check_tag_count import check as check_tag_count
@@ -27,6 +28,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 CHECKS = [
+    ("nsfw",       check_nsfw),
     ("count",      check_count),
     ("conflict",   check_conflict),
     ("duplicates", check_duplicates),
@@ -43,6 +45,7 @@ def main() -> None:
     parser.add_argument("--scene", default="", choices=["simple", "standard", "complex"],
                         help="场景复杂度: simple=单人, standard=双人, complex=复杂")
     parser.add_argument("--json", action="store_true", help="JSON 输出")
+    parser.add_argument("--nsfw", action="store_true", help="NSFW 模式：允许 NSFW 标签")
     args = parser.parse_args()
 
     prompt = args.prompt
@@ -58,6 +61,10 @@ def main() -> None:
         try:
             if check_name == "tag_count":
                 result = check_fn(prompt, args.scene)  # ty:ignore[too-many-positional-arguments]
+            elif check_name == "nsfw" and args.nsfw:
+                # NSFW mode: run check but never fail — just count for info
+                raw = check_nsfw(prompt)
+                result = CheckResult(passed=True, detail=f"NSFW 模式: {raw.detail}", count=raw.count)
             else:
                 result = check_fn(prompt)
         except Exception as e:
