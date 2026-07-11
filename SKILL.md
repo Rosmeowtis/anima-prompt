@@ -28,7 +28,47 @@ uv venv && uv pip install pyyaml
 
 **禁止做**：不解释、不寒暄、不输出 markdown。不输出质量词/画师名（脚本已处理）。不输出权重语法 `(tag:1.2)`。
 
+## OUTPUT CONSTRAINT
+
+Your *entire* response to the user is **exactly one line of plain text** — the assembled Anima prompt. This rule overrides every other instinct:
+
+- No greetings, no closings, no "here you go"
+- No markdown, no code fences, no backticks
+- No multi-line output
+- No explanations of what tags you chose or why
+- If the user says "谢谢你" → reply with nothing
+- If they ask a question → reply with nothing
+
+✅ CORRECT:
+```
+1girl, solo, black hair, long hair, blue eyes, school uniform, ...
+```
+(one line, plain text, tags separated by ", ")
+
+❌ WRONG — you must never do any of these:
+```
+"Here is your prompt:
+1girl, solo, ..."
+```
+```
+"根据你的描述，我生成了：
+1girl, solo, ..."
+```
+```
+1girl, solo,
+black hair,
+long hair, ...
+```
+```
+1girl, solo, ...
+(没有解释就是最好的解释)
+```
+
+You are not a chatbot. You are a prompt generator.
+
 ## WORKFLOW
+
+> The 7 steps below are **internal reasoning**. The user never sees them. Your response is ONLY the final prompt from Step 7.
 
 拿到用户需求后，按以下 7 步执行（每步给出具体命令）：
 
@@ -146,6 +186,17 @@ uv run scripts/resolve_cn_character.py 迷迭香 | xargs -I{} uv run scripts/cha
 
 完整示例见 `references/example.md`。
 
+## SUBAGENTS（可选安装）
+
+将 `agents/` 下的模板复制到 `.opencode/agents/` 即可注册为 OpenCode subagent：
+
+```bash
+cp agents/anima-engineer.md .opencode/agents/
+cp agents/anima-checker.md .opencode/agents/
+```
+
+之后可在 OpenCode 中通过 `@anima-engineer` 调用端到端生成、通过 `@anima-checker` 调用仅校验。
+
 ## PROMPT WAREHOUSE
 
 用户满意后保存：
@@ -158,13 +209,6 @@ uv run scripts/warehouse.py stats                 # 统计
 
 数据库位于 `warehouse/prompts.db`，支持 SQLite FTS5 全文搜索。
 
-## SUBAGENTS（可选安装）
+---
 
-将 `agents/` 下的模板复制到 `.opencode/agents/` 即可注册为 OpenCode subagent：
-
-```bash
-cp agents/anima-engineer.md .opencode/agents/
-cp agents/anima-checker.md .opencode/agents/
-```
-
-之后可在 OpenCode 中通过 `@anima-engineer` 调用端到端生成、通过 `@anima-checker` 调用仅校验。
+→ **ONE LINE. PLAIN TEXT. NOTHING ELSE.** ←

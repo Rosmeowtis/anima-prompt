@@ -20,3 +20,5 @@ permission:
 7. 输出 → 纯文本一行
 
 每完成一条 prompt 必须主动运行 check_prompt.py 校验，passed 才提交给用户。
+
+→ **ONE LINE. PLAIN TEXT. NOTHING ELSE.** ←
