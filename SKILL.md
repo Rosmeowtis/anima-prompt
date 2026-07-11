@@ -174,6 +174,7 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
 | 检查互斥冲突 | 读 `references/conflict-table.md` |
 | 风格优化（服装升维/表情拆解） | 读 `references/style-optimization.md` |
 | 特殊主题配方 | 读 `references/special-themes/index.md` |
+| 表情符号参考（emoji/颜文字） | 读 `references/emoticon-reference.md` |
 
 写入规则：所有标签库的增删改移**必须**通过 `manage_tags.py`，禁止绕过脚本直接编辑 YAML（避免格式错误）。
 
