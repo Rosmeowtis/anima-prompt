@@ -19,8 +19,9 @@ uv venv && uv pip install pyyaml
 anima-prompt 是一个 **OpenCode Skill** 工具仓库，专为 Anima3 二次元图像生成模型设计。它提供：
 
 - **8 个槽位的标签库**（人数、外貌、服装、动作、表情、镜头、场景、氛围）
-- **8 个 Python 脚本**：管理标签、校验 prompt、管理仓库、解析角色名
-- **交互规则与互斥表**：自动检查人数/冲突/重复/场景/灯光/标签数
+- **14 个 Python 脚本**：标签管理、七项校验、角色解析、角色搜索、API 生图
+- **交互规则与互斥表**：自动检查人数/冲突/重复/场景/灯光/标签数/NSFW
+- **Anima API 远程生图**：提交 workflow、随机 seed、自动下载图像
 - **Prompt 仓库**：SQLite FTS5 全文搜索，沉淀高质量 prompt
 
 This is an **OpenCode Skill** repository for the Anima3 anime image generation model, providing a tag library, validation tools, character name resolution, and a prompt warehouse.
@@ -34,34 +35,42 @@ anima-prompt/
 ├── pyproject.toml        # Python 依赖声明 (pyyaml)
 ├── .python-version       # Python 3.11
 │
-├── scripts/              # 8 个工具脚本
-│   ├── manage_tags.py          # 标签库浏览(overview)+增删改移（禁止直接编辑 YAML）
-│   ├── check_prompt.py        # 六项校验（人数/冲突/重复/场景/灯光/标签数）
-│   ├── character_lib.py       # 角色标签搜索（danbooru ZIP）
-│   ├── resolve_cn_character.py # 中文→英文角色名解析（Bangumi API）
-│   ├── warehouse.py           # Prompt 仓库管理
-│   ├── check_count.py / check_conflict.py / check_duplicates.py
-│   ├── check_lighting.py / check_scene.py / check_tag_count.py
+├── scripts/              # 14 个工具脚本
+│   ├── manage_tags.py          # 标签库浏览+增删改移
+│   ├── check_prompt.py        # 七项校验（调用下方子校验器）
+│   │   ├── check_count.py
+│   │   ├── check_conflict.py
+│   │   ├── check_duplicates.py
+│   │   ├── check_lighting.py
+│   │   ├── check_nsfw.py
+│   │   ├── check_scene.py
+│   │   └── check_tag_count.py
+│   ├── call_anima.py          # 提交 workflow 到 Anima API 生图
+│   ├── character_lib.py       # 角色标签搜索（danbooru CSV）
+│   ├── resolve_cn_character.py # 中文→英文角色名解析
+│   ├── warehouse.py            # Prompt 仓库管理
 │   └── _types.py              # 类型定义
 │
-├── tag-library/           # 标签库 YAML（单文件，slot 名作顶层 key）
-│   ├── tags.yaml              # 全量标签（8 槽位树结构合并）
+├── tag-library/           # 标签库
+│   ├── tags_sfw.yaml          # SFW 标签（8 槽位树结构）
+│   ├── tags_nsfw.yaml         # NSFW 标签
 │   ├── cn_char_map.yaml       # 中文→英文角色名缓存
-│   ├── extra_characters.csv   # 额外角色数据
-│   └── danbooru_character.zip # Danbooru 角色数据
+│   ├── danbooru_character.csv # Danbooru 角色数据
+│   └── extra_characters.csv   # 额外角色数据
 │
-├── references/           # 参考文档
-│   ├── reference.md           # 跨模式详细参考（槽位/冲突/风格升维）
-│   ├── nsfw-primer.md         # NSFW 扩展参考（NSFW 模式时加载）
+├── workflows/t2i/         # Anima API workflow JSON
+│   ├── AnimaApi.json
+│
+├── references/            # 参考文档
+│   ├── reference.md           # 跨模式详细参考
+│   ├── nsfw-primer.md         # NSFW 扩展（NSFW 模式时加载）
 │   ├── special-themes.md      # 12 特殊主题详细配方
-│   ├── emoticon-reference.md  # 表情符号参考（emoji/颜文字）
+│   ├── emoticon-reference.md  # 表情符号参考
 │   └── example.md             # 完整输出示例
 │
-├── docs/                 # 归档教程（原始文档）
-├── warehouse/            # Prompt 仓库 (SQLite)
-└── AI 助手配置
-    ├── AGENTS.md
-    └── .serena/
+├── docs/                  # 归档教程（不修改）
+├── warehouse/             # Prompt 仓库 (SQLite)
+└── outputs/               # 生成的图像
 ```
 
 ## 核心工作流
@@ -70,9 +79,9 @@ anima-prompt/
 1. 决策树匹配场景类型
 2. 查槽位顺序与标签数量约束
 3. 逐槽位填充标签
-4. 特殊主题交叉（如 NTR/BDSM）
+4. 特殊主题交叉（仅 NSFW）
 5. 按槽位顺序组装为一行
-6. 六项校验 → 通过
+6. 七项校验 → 通过
 7. 输出纯文本 prompt
 ```
 
@@ -86,9 +95,10 @@ anima-prompt/
 | 添加标签 | `uv run scripts/manage_tags.py add <slot> <path> <tag>` |
 | 删除标签 | `uv run scripts/manage_tags.py rm <slot> <path> <tag>` |
 | 重命名标签 | `uv run scripts/manage_tags.py rename <slot> <path> <old> <new>` |
-| 六项校验 | `uv run scripts/check_prompt.py "<prompt>" --scene <scene>` |
+| 七项校验 | `uv run scripts/check_prompt.py "<prompt>" --scene <scene> [--nsfw]` |
 | 中文角色名解析 | `uv run scripts/resolve_cn_character.py <中文名>` |
 | 角色标签查询 | `uv run scripts/character_lib.py search <name> --exact` |
+| 发送到 Anima API 生图 | `uv run scripts/call_anima.py -p "<prompt>" [--ratio 3:4] [--api-url <url>]` |
 | Prompt 仓库保存 | `uv run scripts/warehouse.py add <描述> <prompt> --type <场景>` |
 | 仓库搜索 | `uv run scripts/warehouse.py search <keyword>` |
 
