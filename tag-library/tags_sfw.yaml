@@ -87,6 +87,7 @@ appearance:
     - rolling eyes
     - long eyelashes
     - thick eyelashes
+    - dull eyes
     颜色:
     - blue eyes
     - red eyes
@@ -122,6 +123,10 @@ appearance:
     - mature female
     - loli
     - shota
+    - androgynous
+    - ballerina
+    - boy standing
+    - muscular male
     肤色:
     - pale skin
     - fair skin
@@ -184,11 +189,14 @@ appearance:
   - bruise
   - scratches
   - dirty body
+  - body markings
   身体部位强调:
     其他部位:
     - armpits
     - neck
     - collarbone
+    - armpit focus
+    - between breasts
     腹部腰部:
     - navel
     - midriff
@@ -202,6 +210,9 @@ appearance:
     - thick thighs
     - large thighs
     - skindentation
+    - feet
+    - soles
+    - thigh focus
   非人特征:
     其他非人:
     - monster girl
@@ -322,6 +333,11 @@ camera-shot:
   - 2views
   - multiple views
   - comic
+  - fake screenshot
+  - livestream
+  - on recording
+  - speech bubble
+  - streaming
   景别:
     全身:
     - full body
@@ -369,6 +385,7 @@ camera-shot:
     侧面:
     - from side
     - profile
+    - side view
     俯视:
     - from above
     - top-down view
@@ -658,6 +675,7 @@ clothing:
     - loafers
     - sneakers
     - barefoot
+    - ballet slippers
     内衣泳装睡衣:
     - bra
     - lace bra
@@ -686,6 +704,7 @@ clothing:
     - oversized shirt
     - boyfriend shirt
     - camisole
+    - bodysuit
     特殊服装:
     - bunny girl
     - playboy bunny
@@ -714,6 +733,8 @@ clothing:
     - evening gown
     - idol costume
     - stage costume
+    - bell collar
+    - eye mask
     职业制服:
     - school uniform
     - sailor uniform
@@ -740,6 +761,7 @@ clothing:
     - waitress
     - apron
     - naked apron
+    - kfc uniform
   材质:
   - silk
   - satin
@@ -787,6 +809,8 @@ clothing:
     - unzipped
     - open front
     - open fly
+    - clothes lift by self
+    - skirt lift by wind
     正常穿着:
     - 具体服装标签
     湿透透视:
@@ -822,11 +846,16 @@ count-identity:
     三女及以上:
     - Xgirls
     - multiple girls
+    - 3girls
     三男及以上:
     - Xboys
     - multiple boys
+    - 3boys
+    - 4boys
+    - 5boys
     两女:
     - 2girls
+    - 2girls only
     两女百合:
     - 2girls
     - yuri
@@ -849,6 +878,14 @@ count-identity:
     - petite female
     - height difference
     - size difference
+  身份角色:
+  - model
+  - patient
+  - photographer
+  - priest
+  - religious authority
+  - stranger
+  - strangers
 detail-mood:
   光学摄影效果:
     剪影:
@@ -1096,6 +1133,7 @@ expression:
       - limp body
       - no reaction
       - relaxed face
+      - unconscious
   表情维度:
     主导得意:
     - smug
@@ -1107,6 +1145,7 @@ expression:
     - sadistic
     - cool
     - composed
+    - assertive female
     平静中性:
     - expressionless
     - emotionless
@@ -1116,6 +1155,7 @@ expression:
     - looking at phone
     - closed eyes
     - calm
+    - cooperative
     惊讶好奇:
     - surprised
     - wide-eyed
@@ -1134,6 +1174,7 @@ expression:
     - clenched teeth
     - pain
     - wavy mouth
+    - angry
     服从献身:
     - submissive
     - devoted
@@ -1143,6 +1184,7 @@ expression:
     - closed eyes
     - peaceful
     - light smile
+    - worship
     羞耻内疚:
     - embarrassed
     - blush
@@ -1152,6 +1194,7 @@ expression:
     - covering face
     - looking away
     - nervous
+    - hand covering own mouth
     表情符号:
     - '>_<'
     - ^_^
@@ -1200,6 +1243,8 @@ expression:
     - parted lips
     - come hither
     - naughty face
+    - lustful
+    - tongue
   身体反应:
     体力消耗:
     - sweat
@@ -1210,6 +1255,8 @@ expression:
     - panting
     - exhausted
     - collapsed
+    - fast asleep
+    - sweat stain
     抵抗顺从:
     - struggling
     - grabbing sheets
@@ -1229,12 +1276,14 @@ expression:
     - full-face blush
     - body blush
     - nose blush
+    - full face blush
   身体痕迹:
     吻痕咬痕:
     - hickey
     - bite marks
     - lipstick mark
     - kiss mark
+    - lipstick mark on body
     淤青伤痕:
     - bruise
     - bruise on face
@@ -1243,8 +1292,113 @@ expression:
     - whip marks
     - cuts
     - blood on face
+    - red marks
 pose-action:
   动作氛围链:
+    基本姿势:
+    - sitting
+    - standing
+    - lying
+    - walking
+    - running
+    - ankle grab
+    - arched back
+    - arm grab
+    - arm support
+    - arm up
+    - arms around neck
+    - arms around waist
+    - arms up
+    - back hug
+    - bending over
+    - bouncing
+    - carrying
+    - caught
+    - cleanup
+    - crossed ankles
+    - disembodied hand
+    - drinking
+    - eating
+    - embrace
+    - face-to-face
+    - face-to-face carrying
+    - feeding
+    - feet don't touch the ground
+    - feet on ground
+    - finger on lips
+    - folded
+    - folded legs
+    - foot dangle
+    - free balance
+    - front-to-back
+    - frozen
+    - girl kneeling
+    - girl lifting
+    - grabbing another's head
+    - grinding
+    - hand mirror
+    - hand on another's head
+    - hands at sides
+    - hands on another's head
+    - hands on knees
+    - hands on wall
+    - hanging
+    - head back
+    - head grab
+    - holding book
+    - holding controller
+    - holding gun
+    - holding phone
+    - hug
+    - hug from behind
+    - kissing
+    - laundry
+    - leaning forward
+    - legs crossed
+    - legs dangling
+    - legs lift
+    - legs shaking
+    - legs together
+    - legs up
+    - lifting
+    - lifting girl
+    - lifting person
+    - locked arms
+    - looking back
+    - lying beside
+    - lying on back
+    - lying on side
+    - lying on stomach
+    - midair
+    - no toys
+    - on back
+    - on chair
+    - on side
+    - on table
+    - one leg lifted
+    - outstretched arms
+    - pigeon-toed
+    - pillow hug
+    - playing games
+    - posing
+    - reading book
+    - resisting
+    - reverse
+    - salute
+    - sitting on chair
+    - smelling clothes
+    - spooning
+    - squatting
+    - stretching
+    - talking on phone
+    - tally
+    - tiptoes
+    - top-down bottom-up
+    - trying to be quiet
+    - under covers
+    - under desk
+    - upside-down
+    - zombie pose
     运动链:
     - motion lines
     - motion blur
@@ -1268,69 +1422,41 @@ scene-environment:
       - park
       - park bench
       - outdoors
-      适用体位:
-      - 暴露露出
-      - 无内短裙
     楼梯间:
       地点:
       - stairwell
       - emergency stairs
       - concrete wall
-      适用体位:
-      - 快速后入
-      - 死角紧迫
     海滩泳池:
       地点:
       - beach
       - swimming pool
       - ocean
-      适用体位:
-      - 泳装露出
-      - 暴露
     电影院:
       地点:
       - cinema
       - dark
       - movie theater
       - seats
-      适用体位:
-      - 暗中口交
-      - 手交
-      - 隐蔽
     电梯:
       地点:
       - elevator
-      适用体位:
-      - 快速暴露
-      - 闪露
-      - 时间压力
     电车公交:
       地点:
       - train
       - crowded train
       - handrail
       - train interior
-      适用体位:
-      - 痴汉
-      - 站立
-      - 暴露
     试衣间:
       地点:
       - fitting room
       - curtain
       - mirror
-      适用体位:
-      - 偷情
-      - 暴露
-      - 更衣
     餐厅居酒屋:
       地点:
       - restaurant
       - izakaya
       - table
-      适用体位:
-      - 餐桌坐位
-      - 桌下服务
   半公开空间:
     办公室:
       地点:
@@ -1338,54 +1464,31 @@ scene-environment:
       - desk
       - office chair
       - after hours
-      适用体位:
-      - 桌上正身
-      - 职场胁迫
-      - 桌下口交
     厨房:
       地点:
       - kitchen
       - counter
-      适用体位:
-      - 站立后入
-      - 裸体围裙
-      - 日常
     客厅沙发:
       地点:
       - couch
       - sofa
       - living room
-      适用体位:
-      - 坐位
-      - 骑乘
-      - 半公开匆忙
     教室:
       地点:
       - classroom
       - school desk
       - chalkboard
-      适用体位:
-      - 桌上
-      - 自慰
-      - 师生
     窗边:
       地点:
       - against window
       - glass
       - city view
       - exposed
-      适用体位:
-      - 后入压窗
-      - 暴露刺激
     车内:
       地点:
       - in car
       - car interior
       - backseat
-      适用体位:
-      - 坐位
-      - 口交
-      - 素股
   场景心理关键词:
     匆忙激情:
     - couch
@@ -1446,6 +1549,8 @@ scene-environment:
     - big computer screen
     - webcam
     - recording
+    - app on phone
+    - phone
     衣物散落:
     - scattered clothes
     - clothes on floor
@@ -1466,6 +1571,7 @@ scene-environment:
     - moonlight
     - night cityscape
     - starry sky
+    - at night
     室内氛围:
     - dim lighting
     - dark room
@@ -1475,6 +1581,7 @@ scene-environment:
     - day
     - afternoon
     - morning
+    - after school
     雨:
     - rain
     - rainy night

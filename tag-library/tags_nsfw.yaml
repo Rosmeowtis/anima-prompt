@@ -65,6 +65,17 @@ appearance:
     - urethra
     - groin
     - cameltoe
+    - vagina
+    - vaginal opening
+    - vulva
+    - cervix
+    - uterus
+    - ovaries
+    - fallopian tubes
+    - crotch
+    - cervical penetration
+    - perineum
+    - labia
     胸部:
     - cleavage
     - between breasts
@@ -307,6 +318,12 @@ clothing:
     - latex gloves
     outfit: nurse
   涩涩道具玩具:
+    乳头装饰:
+    - nipple tassels
+    - nipple jewelry
+    - nipple chain
+    - nipple bells
+    - nipple ribbon
     乳夹:
     - nipple clamps
     - clothespins
@@ -359,6 +376,13 @@ clothing:
     - tally marks
     - lipstick mark
     - handprint
+    阴蒂装饰:
+    - clitoris bar
+    - clitoris chain
+    - clitoris bells
+    - clitoris clamps
+    - clitoris jewelry
+    - clitoris ribbon
     震动棒:
     - vibrator
     - egg vibrator
@@ -552,6 +576,7 @@ pose-action:
     - cum bath
     - bukkake
     - female ejaculation
+    - ejaculation
     羞耻链:
     - shy
     - blush
@@ -652,6 +677,7 @@ pose-action:
         - on side
         - on chair
         - on bed
+        - masturbation
         场景:
         - bedroom
         - bathroom
@@ -908,6 +934,7 @@ pose-action:
         - face fucking
         - skull fucking
         - throat fucking
+        - fellatio
         特殊状态:
         - x-ray
         - :>=
@@ -915,6 +942,7 @@ pose-action:
         - penis on face
         - penis over eyes
         - tongue tattoo
+        - marunomi
         男方动作:
         - hand on another's head
         - head grab
@@ -1246,6 +1274,12 @@ pose-action:
         - undressing
         - clothes lift by self
         - expressionless sex
+    其他体位:
+    - spooning
+    - prone bone
+    - amazon position
+    - anvil position
+    - full nelson position
     后入位:
       维度:
         女方支撑:
@@ -1739,6 +1773,8 @@ pose-action:
       - forced to watch
       - audience
       - waiting turn
+      场景特殊:
+      - glory wall
       孔穴占用:
       - spitroast
       - triple penetration
@@ -1746,6 +1782,7 @@ pose-action:
       - vaginal + anal
       - one after another
       - cooperative
+      - sandwiched
   百合:
     维度:
       互动类型:
@@ -1811,6 +1848,8 @@ scene-environment:
     - pussy juice stain
     - sweat stain
     - used tissue
+    特殊场景:
+    - glory hole
     道具散落:
     - sex toy nearby
     - vibrator on bed
