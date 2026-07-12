@@ -5,6 +5,7 @@
 功能：
   - 加载 workflow JSON，自动发现 __PROMPT__ 占位符和 EmptyLatentImage 节点
   - 注入 prompt、width、height 三个参数
+  - 自动随机化 KSampler/KSamplerAdvanced 的 seed（避免连续相同参数导致后端不返回图像）
   - 提交任务 → 轮询结果 → 下载图像
   - 输出目录图片数量限制（超出自动清理旧文件）
 
@@ -15,6 +16,7 @@
 import argparse
 import hashlib
 import json
+import random
 import sys
 import time
 import urllib.error
@@ -40,6 +42,7 @@ POLL_INTERVAL = 10
 MAX_POLLS = 30
 REQUEST_TIMEOUT = 120
 MAX_IMAGES = 50
+SEED_MAX = 2**53 - 1
 
 
 def _nested_set(obj, keys, value):
@@ -117,6 +120,24 @@ def _find_latent_path(wf):
     return [matches[0], "inputs"]
 
 
+def _find_seed_paths(wf):
+    paths = []
+    for node_id, node in wf.items():
+        if not isinstance(node, dict) or "inputs" not in node:
+            continue
+        ct = node.get("class_type", "")
+        if ct not in ("KSampler", "KSamplerAdvanced"):
+            continue
+        if "seed" in node["inputs"] and isinstance(node["inputs"]["seed"], int):
+            paths.append([node_id, "inputs", "seed"])
+    if not paths:
+        print(
+            "警告: workflow 中未找到 KSampler/KSamplerAdvanced 节点，seed 未随机化",
+            file=sys.stderr,
+        )
+    return paths
+
+
 def prepare_workflow(workflow_path, prompt, width, height):
     path = Path(workflow_path)
     if not path.exists():
@@ -132,6 +153,7 @@ def prepare_workflow(workflow_path, prompt, width, height):
         wp = {
             "prompt": _find_prompt_path(wf),
             "latent": _find_latent_path(wf),
+            "seeds": _find_seed_paths(wf),
         }
         cache[h] = wp
         _save_cache(cache)
@@ -139,6 +161,8 @@ def prepare_workflow(workflow_path, prompt, width, height):
     _nested_set(wf, wp["prompt"], prompt)
     _nested_set(wf, wp["latent"] + ["width"], width)
     _nested_set(wf, wp["latent"] + ["height"], height)
+    for sp in wp["seeds"]:
+        _nested_set(wf, sp, random.randint(0, SEED_MAX))
     return wf
 
 
