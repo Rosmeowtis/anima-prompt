@@ -8,13 +8,9 @@
   - 自动随机化 KSampler/KSamplerAdvanced 的 seed（避免连续相同参数导致后端不返回图像）
   - 提交任务 → 轮询结果 → 下载图像
   - 输出目录图片数量限制（超出自动清理旧文件）
-
-缓存：
-  .cache/workflow_paths.json — workflow 文件 hash → 参数路径映射（首次加载后缓存）
 """
 
 import argparse
-import hashlib
 import json
 import random
 import sys
@@ -22,9 +18,6 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-
-CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
-CACHE_FILE = CACHE_DIR / "workflow_paths.json"
 
 RATIO_MAP = {
     "1:1": (1536, 1536),
@@ -49,23 +42,6 @@ def _nested_set(obj, keys, value):
     for k in keys[:-1]:
         obj = obj[k]
     obj[keys[-1]] = value
-
-
-def _file_hash(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
-
-
-def _load_cache():
-    if CACHE_FILE.exists():
-        return json.loads(CACHE_FILE.read_text(encoding="utf-8"))
-    return {}
-
-
-def _save_cache(cache):
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    CACHE_FILE.write_text(
-        json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
 
 
 def _prune_dir(output_dir, max_count):
@@ -145,23 +121,14 @@ def prepare_workflow(workflow_path, prompt, width, height):
         sys.exit(1)
     wf = json.loads(path.read_text(encoding="utf-8"))
 
-    h = _file_hash(path)
-    cache = _load_cache()
-    wp = cache.get(h)
+    p_path = _find_prompt_path(wf)
+    l_path = _find_latent_path(wf)
+    seeds = _find_seed_paths(wf)
 
-    if not wp:
-        wp = {
-            "prompt": _find_prompt_path(wf),
-            "latent": _find_latent_path(wf),
-            "seeds": _find_seed_paths(wf),
-        }
-        cache[h] = wp
-        _save_cache(cache)
-
-    _nested_set(wf, wp["prompt"], prompt)
-    _nested_set(wf, wp["latent"] + ["width"], width)
-    _nested_set(wf, wp["latent"] + ["height"], height)
-    for sp in wp["seeds"]:
+    _nested_set(wf, p_path, prompt)
+    _nested_set(wf, l_path + ["width"], width)
+    _nested_set(wf, l_path + ["height"], height)
+    for sp in seeds:
         _nested_set(wf, sp, random.randint(0, SEED_MAX))
     return wf
 
