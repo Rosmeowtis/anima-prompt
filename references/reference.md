@@ -10,11 +10,11 @@ Agent 在常规场景无需读取本文件，遇到复杂情况时可查阅。
 ### 风格一致性强调
 
 跨槽位风格一致性铁律：clothing、scene、detail/mood 不能出现逻辑矛盾。基本原则——古风配古风（如 `hanfu` + `ancient shrine` + 水墨空灵），赛博配赛博（如 `latex bodysuit` + `cyberpunk city` + 数字故障），日常配日常（如 `school uniform` + `classroom` + 自然质感）。
-不要出现 `hanfu` 站在 `cyberpunk city` 里这类跨世界观的矛盾组合。同一世界观内不同场景的混搭（如 `kimono` + `love hotel`）属于合理。
+除非用户主动提及“反差感”、“冲突感”、“闯入感”，不要出现 `hanfu` 站在 `cyberpunk city` 里这类跨世界观的矛盾组合。同一世界观内不同场景的混搭（如 `kimono` + `love hotel`）属于合理。
 
 ### 自然语言使用场景及具体写法
 
-**核心原则**：tag 为主，自然语言仅在 tag 无法准确表达时使用。自然语言短句统一放在 prompt 末尾，所有 tag 之后。
+**核心原则**：tag 为主，自然语言用于对整个场景进行概括性描述，或对 tag 无法准确描述的复杂场景进行详细描述。自然语言短句统一放在 prompt 末尾，所有 tag 之后。
 
 **必须使用自然语言的场景**：
 
@@ -41,29 +41,6 @@ Agent 在常规场景无需读取本文件，遇到复杂情况时可查阅。
 | 炫耀/NTR | `as if showing off to the viewer what they can't have` |
 | 羞耻/被注视 | `as if aware of being watched by the viewer` |
 | 臣服/献身 | `as if offering herself entirely to the viewer` |
-
-### 多人场景角色规则
-
-**极重要**：多人场景中，只写角色名而不补外观会导致模型混淆，**必须为每个角色补充完整的外观和动作描述**。推荐用 `BREAK` 物理分隔角色 block，避免属性跨角色串味。
-
-**结构**：
-```
-人数 → 共享互动词（体位/对望/拥抱等涉及两人的标签）→
-角色 A（appearance → clothing → solo-action → expression）BREAK
-角色 B（appearance → clothing → solo-action → expression）→
-共享标签（camera → scene → detail/mood）→
-自然语言（放末尾）
-```
-
-- **共享互动词**：描述两人关系的标签，如 `yuri, holding hands, missionary, fellatio`。紧跟在人数标签之后。
-- **角色 block**：每个角色包含完整的外观、服装、独有动作和表情。block 内保持子槽位顺序一致。
-- **BREAK**：作为逗号分隔序列中的一个分隔元素，物理隔断前后角色 block。
-- **独有动作**：不涉及另一角色的自身动作（如 `one hand making a v sign`），放入对应角色 block。
-- **自然语言**：关系/剧情等 tag 无法表达的内容，统一放在 prompt 末尾。
-
-**示例**：
-- 错误：`raiden shogun, long purple hair, playful, yae miko, pink hair, embarrassed, skirt lift`（模型无法判断属性归属）
-- 正确：`2girls, skirt lift, raiden shogun with long purple hair and purple eyes, naval outfit, smiling mischievously, BREAK, yae miko with long pink hair and fox ears, shrine maiden outfit, blushing, looking away, from above, full body, shrine, one playfully lifting the other's skirt with a mischievous smirk while the other looks shy and embarrassed`
 
 ---
 
