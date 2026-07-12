@@ -58,7 +58,7 @@ def check(prompt: str) -> CheckResult:
 
     passed = len(found) == 0
     count = len(found)
-    detail = f"含 {count} 个 NSFW 标签" if found else "无 NSFW 标签"
+    detail = f"含 {count} 个 NSFW 标签：<{', '.join(found)}>" if found else "无 NSFW 标签"
     return CheckResult(passed=passed, detail=detail, count=count)
 
 

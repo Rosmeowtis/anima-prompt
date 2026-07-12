@@ -2,6 +2,12 @@
 
 本项目是一个 **OpenCode Skill 仓库**。`SKILL.md` 是主要交付物，`scripts/` 是其下层工具。
 
+## 设计原则
+
+- **SFW 模式自包含**：核心规则（决策树/槽位顺序/冲突精简）内联于 SKILL.md，Agent 在 SFW 模式下无需读取任何外部参考文件即可完成 80% 的工作。
+- **NSFW 模式分散加载**：NSFW 扩展集中在 `references/nsfw-primer.md`（一个文件），AGent 在 NSFW 模式下额外读此文件即可；需详细配方时按需查 `references/special-themes.md`。
+- **references/ 降级参考**：不再是 WORKFLOW 强制读取步骤，而是复杂场景下的按需深度查阅。
+
 ## 运行环境
 
 - Python 3.11 (`.python-version`)，包管理用 `uv`（非 pip/poetry）
@@ -32,6 +38,6 @@
 
 - Skill 本体: `SKILL.md`
 - 标签库: `tag-library/` (8 个 YAML)
-- 参考文件: `references/` (决策树、槽位顺序、冲突表、12 个特殊主题)
+- 参考文件: `references/` (reference.md, nsfw-primer.md, special-themes.md, emoticon-reference.md, example.md)
 - 脚本工具: `scripts/` (9 个 .py)
 - prompt 仓库: `warehouse/prompts.db` (SQLite FTS5)

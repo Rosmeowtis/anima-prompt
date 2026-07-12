@@ -51,15 +51,11 @@ anima-prompt/
 │   └── danbooru_character.zip # Danbooru 角色数据
 │
 ├── references/           # 参考文档
-│   ├── decision-tree.md       # 场景类型决策树
-│   ├── slot-order.md          # 槽位顺序与标签数量约束
-│   ├── conflict-table.md      # 互斥冲突表
-│   ├── style-optimization.md  # 服装升维/表情拆解
-│   ├── example.md             # 完整输出示例
-│   └── special-themes/        # 12 个特殊主题配方（NTR/BDSM/隐奸…）
-│
-├── agents/               # OpenCode Subagent 模板
-│   └── anima-engineer.md / anima-checker.md
+│   ├── reference.md           # 跨模式详细参考（槽位/冲突/风格升维）
+│   ├── nsfw-primer.md         # NSFW 扩展参考（NSFW 模式时加载）
+│   ├── special-themes.md      # 12 特殊主题详细配方
+│   ├── emoticon-reference.md  # 表情符号参考（emoji/颜文字）
+│   └── example.md             # 完整输出示例
 │
 ├── docs/                 # 归档教程（原始文档）
 ├── warehouse/            # Prompt 仓库 (SQLite)
@@ -100,14 +96,7 @@ anima-prompt/
 
 作为 Skill 加载（自动识别）：OpenCode 读取 `SKILL.md`。
 
-可选安装 Subagent：
-
-```bash
-cp agents/anima-engineer.md .opencode/agents/
-cp agents/anima-checker.md .opencode/agents/
-```
-
-之后可通过 `@anima-engineer` 端到端生成、`@anima-checker` 仅校验。
+SFW 模式自包含于 `SKILL.md`，无需读外部参考文件。NSFW 模式额外加载 `references/nsfw-primer.md`（一个文件含全部 NSFW 扩展）。
 
 ## 技术依赖 / Dependencies
 

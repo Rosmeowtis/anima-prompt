@@ -27,10 +27,6 @@ CONFLICT_PAIRS = [
     ("blindfold", "heart-shaped pupils", "看不到眼睛"),
     ("blindfold", "rolling eyes", "看不到眼睛"),
     ("blindfold", "glasses", "物理冲突"),
-    ("completely nude", "panties", "全裸不穿衣"),
-    ("completely nude", "bra", "全裸不穿衣"),
-    ("completely nude", "school uniform", "全裸不穿衣"),
-    ("completely nude", "maid outfit", "全裸不穿衣"),
     ("pantyhose", "barefoot", "穿丝袜不可能是光脚"),
     ("standing sex", "lying", "体位矛盾"),
     ("standing sex", "on back", "体位矛盾"),
@@ -47,11 +43,6 @@ CONFLICT_PAIRS = [
     ("open mouth", "closed mouth", "张嘴 vs 闭嘴"),
     ("rolling eyes", "looking at viewer", "翻白眼 vs 直视"),
     ("spread legs", "legs together", "分开 vs 并拢"),
-    ("cat lingerie", "no panties", "内衣套装隐含内裤"),
-    ("lace lingerie", "no panties", "内衣套装隐含内裤"),
-    ("babydoll", "no panties", "内衣套装隐含内裤"),
-    ("negligee", "no panties", "内衣套装隐含内裤"),
-    ("chemise", "no panties", "内衣套装隐含内裤"),
 ]
 
 
