@@ -25,9 +25,15 @@ CACHE_DIR = Path(__file__).resolve().parent.parent / ".cache"
 CACHE_FILE = CACHE_DIR / "workflow_paths.json"
 
 RATIO_MAP = {
-    "1:1": (1536, 1536),   "16:9": (2048, 1152),  "9:16": (1152, 2048),
-    "4:3": (1792, 1344),   "3:4": (1344, 1792),   "3:2": (1920, 1280),
-    "2:3": (1280, 1920),   "5:4": (1728, 1376),   "4:5": (1376, 1728),
+    "1:1": (1536, 1536),
+    "16:9": (2048, 1152),
+    "9:16": (1152, 2048),
+    "4:3": (1792, 1344),
+    "3:4": (1344, 1792),
+    "3:2": (1920, 1280),
+    "2:3": (1280, 1920),
+    "5:4": (1728, 1376),
+    "4:5": (1376, 1728),
 }
 
 POLL_INTERVAL = 10
@@ -54,7 +60,9 @@ def _load_cache():
 
 def _save_cache(cache):
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    CACHE_FILE.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+    CACHE_FILE.write_text(
+        json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
 
 def _prune_dir(output_dir, max_count):
@@ -96,7 +104,8 @@ def _find_prompt_path(wf):
 
 def _find_latent_path(wf):
     matches = [
-        node_id for node_id, node in wf.items()
+        node_id
+        for node_id, node in wf.items()
         if isinstance(node, dict) and node.get("class_type") == "EmptyLatentImage"
     ]
     if len(matches) != 1:
@@ -167,12 +176,19 @@ def parse_args():
     p = argparse.ArgumentParser(description="向远程 Anima API 发送 workflow 并接收图像")
     p.add_argument("-p", "--prompt", required=True, help="替换 __PROMPT__ 的文本")
     p.add_argument(
-        "-r", "--ratio", default="1:1",
+        "-r",
+        "--ratio",
+        default="1:1",
         choices=sorted(RATIO_MAP.keys()),
         help="画面比例（默认 1:1）",
     )
     p.add_argument("--api-url", default="http://localhost:8188", help="Anima API 地址")
-    p.add_argument("-w", "--workflow", default="workflows/t2i/AnimaApi.json", help="workfow JSON 路径")
+    p.add_argument(
+        "-w",
+        "--workflow",
+        default="workflows/t2i/AnimaApi.json",
+        help="workfow JSON 路径",
+    )
     p.add_argument("-o", "--output", default="./outputs", help="图像保存目录")
     return p.parse_args()
 
