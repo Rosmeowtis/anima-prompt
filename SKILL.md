@@ -78,18 +78,14 @@ You are not a chatbot. You are a prompt generator.
 ## MODE
 
 Default: **SFW mode**.
-- Tag library: `tag-library/tags_sfw.yaml`
-- `manage_tags.py` without `--nsfw`
 - `check_prompt.py` without `--nsfw`
 - Pose-action slot: only non-explicit subset (运动链, 差分分镜)
 - Special themes in `references/` are NSFW-only; in SFW mode they simply return no results when tags are absent
 - References unchanged
 
 Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R18`, or `r18`.
-- Tag library: `tag-library/tags_nsfw.yaml`
-- `manage_tags.py` with `--nsfw`
 - `check_prompt.py` with `--nsfw`
-- Full tag library available
+- Full tag vocabulary available
 
 ## WORKFLOW
 
@@ -115,12 +111,10 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
    → 读 references/slot-order.md
    → 确认槽位顺序、标签数量范围、风格一致性约束
 
-3. 翻库填标签
-    → uv run scripts/manage_tags.py [--nsfw] overview    # NSFW mode: add --nsfw, 先看目录结构（slot → 子类目+行号）
-    → Read `tag-library/tags_sfw.yaml` offset=<行号> limit=60  # NSFW mode: tags_nsfw.yaml, 精准读目标区域
-    → 按 references/slot-order.md 的顺序逐个槽位搜索匹配
-    → 服装细节/表情微调参见 references/style-optimization.md
-    → 增/删/改/移标签强制使用 manage_tags.py（禁止直接编辑 YAML）
+3. 生成标签
+   → 按 references/slot-order.md 的顺序逐个槽位自由填充标签。
+   → 服装细节/表情微调参见 references/style-optimization.md。
+   → 遇到库中无对应标签的情况，直接用英文原词，不做近似替换。
 
 4. 特殊主题交叉
    → 若命中 NTR/BDSM/隐奸等 → 读 references/special-themes/<theme>.md 获取跨槽位配方
@@ -132,9 +126,9 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
    → 自然语言短句放末尾
 
 6. 校验
-    → uv run scripts/check_prompt.py "<prompt>" --scene <simple|standard|complex> [--nsfw]
+    → uv run scripts/check_prompt.py "<prompt>" [--nsfw]
    → 失败则根据 JSON 报告回退修改，直到 "passed": true
-   → **NSFW 标签盲盒陷阱**：`check_nsfw.py` 和 `check_prompt.py` 均不指明哪个标签触发了 NSFW 检测。若 NSFW check failed，用二分排除法定位：移除 prompt 的后半段标签 → 重跑 check_nsfw.py → 若仍含 NSFW 则问题在前半段，否则在后半段 → 递归缩小范围直到定位。常见 SFW-违规标签举例：`legs up`, `spread legs`, `thigh gap`, `hand between legs`, `standing` — 这些在 SFW 库中可能被标记为 NSFW，需替换为同义安全标签（如 `sitting with bent knees` 替代 `legs up`，或用自然语言短语 `standing beside bed` 替代单标签 `standing`）。注意：自然语言短句（两个以上单词组成）不受标签库 NSFW 检测影响，可用作被误杀标签的替换方案。
+   → **NSFW 标签检测**：`check_nsfw.py` 的 JSON 输出会列出具体命中的标签名。SFW 场景下若被误杀（如 `legs up`、`spread legs`），用同义安全标签替换或用自然语言短句替代。
 
 7. 输出
    → 仅输出纯文本一行，无任何修饰
@@ -166,7 +160,6 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
 | 4 | 重复标签 | check_duplicates.py |
 | 5 | 场景物理兼容 | check_scene.py |
 | 6 | 光影校验 | check_lighting.py |
-| 7 | 标签总数 | check_tag_count.py |
 
 输出 JSON 报告，`"passed": true` 即可提交。
 
@@ -174,15 +167,7 @@ Switch to **NSFW mode** ONLY when user explicitly includes: `--nsfw`, `NSFW`, `R
 
 | 需要... | 使用 |
 |---------|------|
-| 浏览目录结构（含行号） | `uv run scripts/manage_tags.py [--nsfw] overview [--slot <name>]` |
-| 读取标签列表 | `Read tag-library/tags_sfw.yaml offset=<行号> limit=60` （NSFW mode: tags_nsfw.yaml） |
-| 添加标签 | `uv run scripts/manage_tags.py add <slot> <path> <tag>` |
-| 删除标签 | `uv run scripts/manage_tags.py rm <slot> <path> <tag>` |
-| 重命名标签 | `uv run scripts/manage_tags.py rename <slot> <path> <old> <new>` |
-| 移动标签 | `uv run scripts/manage_tags.py mv <slot> <old_path> <tag> <new_path>` |
-| 新增分类 | `uv run scripts/manage_tags.py add-cat <slot> <path>` |
-| 删除分类 | `uv run scripts/manage_tags.py rm-cat <slot> <path>` |
-| 一键校验 (7项) | `uv run scripts/check_prompt.py "<prompt>" --scene <simple\|standard\|complex> [--nsfw]` |
+| 一键校验 (6项) | `uv run scripts/check_prompt.py "<prompt>" [--nsfw]` |
 | NSFW 标签检测 | `uv run scripts/check_nsfw.py "<prompt>"` |
 | 仓库管理 | `uv run scripts/warehouse.py add/search/stats` |
 | 中文角色名→英文名 | `uv run scripts/resolve_cn_character.py <中文名>` |
@@ -238,28 +223,6 @@ uv run scripts/call_anima.py -p "1girl, solo, black hair, blue eyes" --ratio 16:
 ```
 
 流程：加载 workflow → 注入 prompt → 提交任务（120s 超时）→ 轮询结果（每 10s，最多 5min）→ 下载图像到 `--output`。
-
-### 标签库文件
-
-两个独立文件，通过 `manage_tags.py --nsfw` 切换：
-
-- **SFW**: `tag-library/tags_sfw.yaml` — 仅含非色情标签
-- **NSFW**: `tag-library/tags_nsfw.yaml` — 含色情标签，需用户声明 NSFW 模式后使用
-
-所有槽位于对应文件中，slot 名作顶层 key，内部保留树结构。完整槽位列表：
-
-| slot 名 | 典型内容 |
-|---------|----------|
-| count-identity | 人数性别、IP角色、体型差 |
-| appearance | 发色发型、瞳色、体型、肤色、非人特征、标记 |
-| clothing | 服装类型、材质、穿着状态、7维改造、反差公式、道具 |
-| pose-action | 单人4节、双人前戏6节、双人正戏11节、多人、百合、氛围链 |
-| expression | 表情维度、强度映射(Lv1-Lv4)、身体反应、液体层次、身体痕迹 |
-| camera-shot | 景别、视角、POV、构图、体位专属镜头、分镜 |
-| scene-environment | 场所速查(私密/半公开/公共)、风险矩阵、天气时辰、场景细节 |
-| detail-mood | 画面质感、运动渲染、光学效果、数字效果、氛围基调、禁令清单 |
-
-写入规则：所有标签库的增删改移**必须**通过 `manage_tags.py`，禁止绕过脚本直接编辑 YAML（避免格式错误）。
 
 ## ROLE TAG LOOKUP
 
@@ -329,14 +292,13 @@ Hermes Agent 通过 `delegate_task` 调用本技能的三个子代理，覆盖�
 > 1. Load skill 'anima-prompt' via skill_view
 > 2. Read references/decision-tree.md → determine scene type
 > 3. Read references/slot-order.md → determine slot ordering and tag count ranges
-> 4. Run `uv run scripts/manage_tags.py [--nsfw] overview` → browse tag library structure
-> 5. Read tag-library/tags_{sfw\|nsfw}.yaml by offset → fill tags slot by slot
-> 6. **MANDATORY — scan the user description for ANY proper name (Chinese/English) that could be a character name, game/anime title, or IP. If ANY name is found, resolve it NOW:** `uv run scripts/resolve_cn_character.py (中文名)` → then `uv run scripts/character_lib.py search (英文名) --exact --limit 1`. Place the resolved character + source tags (e.g. `rosmontis, arknights`) FIRST in count-identity slot, before filling other slots. This is NOT optional — skipping it causes generic-catgirl syndrome.
-> 7. For special themes (NTR/BDSM/etc): read references/special-themes/
-> 8. Assemble: all lowercase, tags joined with ", ", **one line**. Multi-character: use BREAK
-> 9. Validate: `uv run scripts/check_prompt.py "(prompt)" --scene standard [--nsfw]`
-> 10. Fix validation failures → re-validate until `passed: true`
-> 11. If user says "保存": `uv run scripts/warehouse.py add "(desc)" "(prompt)" --type (type)`
+> 4. Generate tags freely from LLM's built-in Danbooru vocabulary, structured by slot-order.md
+> 5. **MANDATORY — scan the user description for ANY proper name (Chinese/English) that could be a character name, game/anime title, or IP. If ANY name is found, resolve it NOW:** `uv run scripts/resolve_cn_character.py (中文名)` → then `uv run scripts/character_lib.py search (英文名) --exact --limit 1`. Place the resolved character + source tags (e.g. `rosmontis, arknights`) FIRST in count-identity slot, before filling other slots. This is NOT optional — skipping it causes generic-catgirl syndrome.
+> 6. For special themes (NTR/BDSM/etc): read references/special-themes/
+> 7. Assemble: all lowercase, tags joined with ", ", **one line**. Multi-character: use BREAK
+> 8. Validate: `uv run scripts/check_prompt.py "(prompt)" [--nsfw]`
+> 9. Fix validation failures → re-validate until `passed: true`
+> 10. If user says "保存": `uv run scripts/warehouse.py add "(desc)" "(prompt)" --type (type)`
 >
 > ## OUTPUT CONSTRAINT
 > **CRITICAL: After validation passes, output ONLY the prompt line.**
@@ -347,7 +309,7 @@ Hermes Agent 通过 `delegate_task` 调用本技能的三个子代理，覆盖�
 **⚠️ Pitfalls:**
 
 - **Generic-catgirl syndrome**: 用户描述了具体角色（如「迷迭香」「初音未来」）但没有在 prompt 里显式写角色名 → 子代理跳过 step 6 → 出图变成随机角色。**主代理必须检查用户输入是否包含角色名，若有则显式填入 `{USER_INPUT}` 提醒子代理执行角色解析**，不得依赖子代理自行判断。
-- **NSFW 标签盲盒陷阱**: `check_prompt.py` 的 NSFW 检测只报告「含 N 个 NSFW 标签」但不指明是哪几个。子代理校验失败后若盲目重试可能无限循环。主代理应在 context 末尾附加提示：「若 NSFW 检测失败但场景本身安全，用二分排除法定位问题标签：移除 prompt 后半段 → 重跑 check_nsfw.py → 递归缩小范围直到定位，然后替换为同义安全标签」。
+- **NSFW 标签检测**: `check_nsfw.py` 的 JSON 输出会列出具体命中的标签名。SFW 场景下若被误杀，用同义安全标签替换或用自然语言短句替代。
 - **路径断裂**: skill directory 含反斜杠长路径时可能出现换行断裂。主代理填入 context 时使用正斜杠格式 `C:/Users/ros/...`。
 
 ### anima-checker — 校验 prompt
@@ -369,7 +331,7 @@ Hermes Agent 通过 `delegate_task` 调用本技能的三个子代理，覆盖�
 >
 > ## STEPS
 > 1. Load skill 'anima-prompt' via skill_view
-> 2. Run: `uv run scripts/check_prompt.py "(prompt)" --scene standard [--nsfw]`
+> 2. Run: `uv run scripts/check_prompt.py "(prompt)" [--nsfw]`
 > 3. Return JSON report. If passed=false, explain which checks failed.
 >
 > Do **NOT** generate new prompts. Do NOT modify anything.

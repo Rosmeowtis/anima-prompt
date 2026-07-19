@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""NSFW 标签检测 —— 检查 prompt 中是否含 NSFW 标签。
+"""NSFW 标签检测 —— 硬编码关键词，零外部依赖。
 
 用法:
   uv run scripts/check_nsfw.py "<prompt>"
   uv run scripts/check_nsfw.py "<prompt>" --json
+
+筛选原则: 只收无论如何都不可能是 SFW 的关键词。
+  收: 性器官、性行为、性体液、性玩具
+  不收: nipple/cleavage/spread legs/nude/ahegao/blush/sweat/tears 等存在 SFW 上下文的标签
 """
 
 import argparse
@@ -12,49 +16,85 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-import yaml
-
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _types import CheckResult
 
-TAGS_DIR = Path(__file__).resolve().parent.parent / "tag-library"
-NSFW_PATH = TAGS_DIR / "tags_nsfw.yaml"
-SFW_PATH = TAGS_DIR / "tags_sfw.yaml"
+# === 唯一数据源: 硬编码 NSFW 关键词 ===
+# ponytail: ~80 个关键词，删掉原 YAML 加载。新增关键词时直接加到这里。
+NSFW_KEYWORDS: set[str] = {
+    # -- 性器官 --
+    "penis", "huge penis", "gigantic penis", "very big penis",
+    "small penis", "tiny penis", "mini penis", "veiny penis",
+    "pussy", "puffy pussy", "dark pussy", "pussy gaping",
+    "vagina", "vaginal opening", "vulva", "labia",
+    "clitoris", "huge clitoris", "erect clitoris", "clitoral hood",
+    "pierced clitoris", "clitoris rings",
+    "cervix", "uterus", "ovaries", "fallopian tubes",
+    "urethra", "perineum", "cleft of venus",
+    "anus", "puffy anus", "dark anus",
+    "testicles", "huge testicles", "long testicles",
+    "foreskin", "phimosis", "erection",
+    "penis and vagina", "large breasts + penis",
+    "female pubic hair", "stray pubic hair",
 
+    # -- 性行为 --
+    "fellatio", "cunnilingus", "anilingus",
+    "paizuri", "handjob", "footjob", "facesitting",
+    "missionary", "doggystyle", "reverse doggystyle",
+    "cowgirl position", "reverse cowgirl position",
+    "prone bone", "mating press",
+    "full nelson position", "amazon position", "anvil position",
+    "standing missionary", "suspended congress",
+    "piledriver", "spitroast",
+    "gangbang", "group sex", "after gangbang",
+    "double penetration", "triple penetration", "vaginal + anal",
+    "deepthroat", "irrumatio", "face fucking",
+    "skull fucking", "throat fucking",
+    "rimming", "ass-to-ass",
+    "sex from behind", "rough sex", "rape", "assisted rape",
+    "stealth sex", "implied sex", "expressionless sex",
+    "masturbation", "fingering", "clothed masturbation",
+    "cervical penetration", "deep penetration",
+    "imminent penetration", "just the tip",
+    "orgasm", "female ejaculation", "squirting",
+    "in heat", "after sex", "after fellatio",
+    "trombone",
 
-def _extract_tags(path: Path) -> set[str]:
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    tags: set[str] = set()
+    # -- 性体液 --
+    "cum", "precum", "creampie", "bukkake",
+    "cum inside", "cum overflow", "cum drip", "cum string",
+    "cum pool", "cum bath", "excessive cum",
+    "cum on body", "cum on face", "cum on breasts",
+    "cum on hair", "cum on clothes",
+    "cum in mouth", "cum covered", "cum dump",
+    "cum bubble", "vomiting cum", "cum silk",
+    "pussy juice", "pussy juice pool",
+    "pussy juice stain", "pussy juice trail",
+    "ejaculation", "gokkun", "facial",
 
-    def _walk(node):
-        if isinstance(node, list):
-            for item in node:
-                if isinstance(item, str):
-                    tags.add(item)
-        elif isinstance(node, dict):
-            for v in node.values():
-                _walk(v)
+    # -- 性玩具 / 性道具 --
+    "dildo", "double dildo", "vibrator", "wand vibrator",
+    "anal beads", "artificial vagina",
+    "ball gag", "penis gag",
+    "condom", "used condom", "many used condoms",
+    "glory wall",
 
-    _walk(data)
-    return tags
+    # -- 明确性状态 --
+    "futanari",
+    "fucked silly", "mind break",
+    "corruption", "bimbofication",
+    "woman hypnotized lewd", "instant loss",
+    "cum dump",
 
-
-def _load_nsfw_tags() -> set[str]:
-    """取 NSFW 标签集，排除也出现在 SFW 中的（避免共享标签误报）。"""
-    nsfw = _extract_tags(NSFW_PATH)
-    sfw = _extract_tags(SFW_PATH)
-    return nsfw - sfw
-
-
-_NSFW_CACHE: set[str] | None = None
+    # -- BDSM (性向明确) --
+    "shibari", "kinbaku",
+    "crotch tattoo", "pubic tattoo",
+}
 
 
 def check(prompt: str) -> CheckResult:
-    global _NSFW_CACHE
-    if _NSFW_CACHE is None:
-        _NSFW_CACHE = _load_nsfw_tags()
-
     tags = [t.strip() for t in prompt.split(",") if t.strip()]
-    found = [t for t in tags if t in _NSFW_CACHE]
+    found = [t for t in tags if t in NSFW_KEYWORDS]
 
     passed = len(found) == 0
     count = len(found)
